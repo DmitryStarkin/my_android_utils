@@ -25,7 +25,7 @@ repositories {
 ```
 dependencies {
 ...........
-         implementation 'com.github.DmitryStarkin:android_async_lib:version'
+         implementation 'com.github.DmitryStarkin:my_android_utils:version'
    }
 ```
 
