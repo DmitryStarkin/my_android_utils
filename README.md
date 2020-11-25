@@ -15,9 +15,11 @@ first version
 
 1 in project level build.gradle add:
 ```
+allprojects {
 repositories {
 ........
         maven { url "https://jitpack.io" }
+        }
    }
 ```
 
