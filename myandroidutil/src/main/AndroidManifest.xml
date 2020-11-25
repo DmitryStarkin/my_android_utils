@@ -14,5 +14,37 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.starsoft.myandroidutil">
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="message/rfc822" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="false"
+        >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.starsoft.myandroidutil.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:node="merge">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.starsoft.myandroidutil.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data  android:name="com.starsoft.myandroidutil.providers.initialisers.ContextProviderInitializer"
+                android:value="androidx.startup" />
+        </provider>
+</application>
 </manifest>
