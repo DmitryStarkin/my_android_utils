@@ -21,7 +21,7 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 11:34.
 
-class Logger(private var tag: String, private val toFile: Boolean = false) {
+class Logger(private val tag: String, private val toFile: Boolean = false) {
 
     companion object {
 
@@ -45,7 +45,7 @@ class Logger(private var tag: String, private val toFile: Boolean = false) {
                 tag, _msg
             )
             if (toFile) {
-                t?.apply { _msg = _msg + " " + '\n' + Log.getStackTraceString(this) }
+                t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("d - $tag $_msg")
             }
         }
@@ -61,7 +61,7 @@ class Logger(private var tag: String, private val toFile: Boolean = false) {
                 tag, _msg
             )
             if (toFile) {
-                t?.apply { _msg = _msg + " " + '\n' + Log.getStackTraceString(this) }
+                t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("i - $tag $_msg")
             }
         }
@@ -77,7 +77,7 @@ class Logger(private var tag: String, private val toFile: Boolean = false) {
                 tag, _msg
             )
             if (toFile) {
-                t?.apply { _msg = _msg + " " +  '\n' + Log.getStackTraceString(this) }
+                t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("w - $tag $_msg")
             }
         }
@@ -93,7 +93,7 @@ class Logger(private var tag: String, private val toFile: Boolean = false) {
                 tag, _msg
             )
             if (toFile) {
-                t?.apply { _msg = _msg + " " +  '\n' + Log.getStackTraceString(this) }
+                t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("e - $tag $_msg")
             }
         }
@@ -109,7 +109,7 @@ class Logger(private var tag: String, private val toFile: Boolean = false) {
                 tag, _msg
             )
             if (toFile) {
-                t?.apply { _msg = _msg + " " +  '\n' + Log.getStackTraceString(this) }
+                t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("v - $tag $_msg")
             }
         }
