@@ -30,7 +30,7 @@
         >
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.starsoft.myandroidutil.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
             tools:node="merge">
@@ -40,7 +40,7 @@
         </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.starsoft.myandroidutil.androidx-startup"
+            android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
             <meta-data  android:name="com.starsoft.myandroidutil.providers.initialisers.ContextProviderInitializer"
