@@ -7,7 +7,7 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Version:
 
-0.1.7b current
+0.1.8b current
 
 add Accessibility function
 

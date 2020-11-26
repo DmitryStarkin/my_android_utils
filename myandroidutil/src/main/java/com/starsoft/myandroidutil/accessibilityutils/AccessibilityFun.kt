@@ -16,6 +16,9 @@ package com.starsoft.myandroidutil.accessibilityutils
 
 import android.os.Bundle
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.EditText
+import android.widget.TextView
+import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
 import com.starsoft.myandroidutil.stringext.insertTo
 
 
@@ -53,6 +56,25 @@ fun AccessibilityNodeInfo.insertText(text: String): Boolean {
     })
 }
 
+fun AccessibilityNodeInfo.setText(arguments: Bundle? = null): Boolean {
+    if (!this.supportAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_TEXT) || !this.isEnabled) return false
+    return this.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+}
+
+fun AccessibilityNodeInfo.clearText() {
+    this.setText()
+}
+
+fun AccessibilityNodeInfo.changeText(text: CharSequence): Boolean {
+    this.refresh()
+    return setText(Bundle().apply {
+        putCharSequence(
+            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+            text
+        )
+    })
+}
+
 fun AccessibilityNodeInfo.supportAction(action: AccessibilityNodeInfo.AccessibilityAction): Boolean {
 
     for (_action in this.actionList) {
@@ -61,4 +83,20 @@ fun AccessibilityNodeInfo.supportAction(action: AccessibilityNodeInfo.Accessibil
         }
     }
     return false
+}
+
+fun AccessibilityNodeInfo.getTextFrom(): CharSequence {
+
+    try {
+        if (this.className?.let {
+                Class.forName(it.toString())
+                    .isInstanceOrExtend(TextView::class.java)
+            } == true
+        ) {
+            return (this.text ?: "")
+        }
+    } catch (e: ClassNotFoundException) {
+        e.printStackTrace()
+    }
+    return ""
 }
