@@ -7,7 +7,7 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Version:
 
-0.1.4b current
+0.1.5b current
 
 log function add
 
