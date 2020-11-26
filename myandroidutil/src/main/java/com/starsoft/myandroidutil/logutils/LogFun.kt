@@ -22,7 +22,6 @@ import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.fileutils.FileSaver
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
-import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 import com.starsoft.myandroidutil.uimessageutils.makeLongToast
 import java.io.File
 import java.io.FileInputStream
@@ -63,9 +62,9 @@ private fun Context.getLogsDir(): File {
     return dir
 }
 
-fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
+fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
 
-    val file = this.getLogFile()
+    val file = mainContext.getLogFile()
     if (file.exists() && perform) {
         LogWriter.writeLogMessage("Log send",
             { LogWriter.blockLog = true
@@ -74,7 +73,7 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
                     FileInputStream(file), SEND_FILE_NAME, FileSaver.DIRECTORY.CACH_LOGS,
                     onSusses = { f ->
                         LogWriter.blockLog = false
-                        sendLogToEmail(eMails, f)
+                        sendFileToEmail(eMails, f)
                     }, onError = { e ->
                         LogWriter.blockLog = false
                         e.printStackTrace()
@@ -82,11 +81,11 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
     }
 }
 
-fun Context.sendLogToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), logFile: File) {
+fun sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
 
-    if (logFile.exists()) {
+    if (fileToSend.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
-        val contentUri: Uri = FileProvider.getUriForFile(this, APPLICATION_ID + ".fileprovider", logFile)
+        val contentUri: Uri = FileProvider.getUriForFile(mainContext, APPLICATION_ID + ".fileprovider", fileToSend)
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
         intent.type = "message/rfc822"
@@ -95,19 +94,21 @@ fun Context.sendLogToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.co
         intent.putExtra(Intent.EXTRA_EMAIL, eMails)
 //        TODO Dmitry
         intent.putExtra(Intent.EXTRA_SUBJECT, "Dmitry")
-        intent.putExtra(Intent.EXTRA_TEXT, "Log $time file in attachment")
+        intent.putExtra(Intent.EXTRA_TEXT, fileToSend.name + " $time file in attachment")
 
-
-        val packageManager = this.applicationContext.packageManager
+        fileToSend.name
+        val packageManager = mainContext.applicationContext.packageManager
         val matches: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
 
         if (matches.isNotEmpty()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            val choiser = Intent.createChooser(intent, "Send log witch")
-            choiser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.applicationContext.startActivity(choiser);
+            val choicer = Intent.createChooser(intent, "Send log witch")
+            choicer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            mainContext.applicationContext.startActivity(choicer);
         } else {
             mainContext.makeLongToast("Impossible send this file")
         }
+    } else {
+        mainContext.makeLongToast("File not exists")
     }
 }

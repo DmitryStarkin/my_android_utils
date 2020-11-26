@@ -32,7 +32,6 @@ import java.lang.Exception
 
 object FileSaver {
 
-    private val log = Logger(this::class.java.simpleName)
     private val DEFAULT_COMRESSION = 80
     private val DEFAULT_IMAGE_FORMAT = Bitmap.CompressFormat.JPEG
     private val executor = newSingleThreadPool()
@@ -59,7 +58,6 @@ object FileSaver {
     }
 
     fun saveBitmap(from: Bitmap, to: String, directory: DIRECTORY, onSusses: (File) -> Unit, onError: (Throwable) -> Unit = ::errorStub) {
-        log.d{"FileSaver start save bitmap"}
         executor.launch ({ f -> onSusses.invoke(f) }, { e -> onError.invoke(e) }) {
 
             saveFile(to, directory, bitmap = from)
@@ -94,7 +92,6 @@ object FileSaver {
 
             if (inputStream != null) {
                 var length: Int = inputStream.read(buffer)
-                log.d{"Preparing susses start save"}
                 while ((length) > 0 && !Thread.currentThread().isInterrupted) {
                     myOutput.write(buffer, 0, length)
                     length = inputStream.read(buffer)
@@ -111,7 +108,6 @@ object FileSaver {
             myOutput?.flush()
             myOutput?.close()
         }
-        log.d{"Saving susses"}
         return file
     }
 
