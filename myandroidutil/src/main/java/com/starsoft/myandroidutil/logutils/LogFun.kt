@@ -20,6 +20,10 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.fileutils.FileSaver
+import com.starsoft.myandroidutil.providers.ContextProvider
+import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.refutils.getBuildConfigValue
+import com.starsoft.myandroidutil.uimessageutils.makeLongToast
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -32,7 +36,7 @@ private const val FILE_EXTENSIONS = ".txt"
 private const val FILE_NAME = "Log"
 private const val SEND_FILE_NAME = "LogToSend.txt"
 private val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
-
+private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 
 fun Context.getLogFile(): File {
     return File(this.getLogsDir(), FILE_NAME + FILE_EXTENSIONS)
@@ -82,7 +86,7 @@ fun Context.sendLogToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.co
 
     if (logFile.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
-        val contentUri: Uri = FileProvider.getUriForFile(this, "io.getonekey.onekeyapp.fileprovider", logFile)
+        val contentUri: Uri = FileProvider.getUriForFile(this, APPLICATION_ID + ".fileprovider", logFile)
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
         intent.type = "message/rfc822"
@@ -103,7 +107,7 @@ fun Context.sendLogToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.co
             choiser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             this.applicationContext.startActivity(choiser);
         } else {
-//            makeLongToast(App.instance.getApplicationContext(), "Impossible send this file")
+            mainContext.makeLongToast("Impossible send this file")
         }
     }
 }
