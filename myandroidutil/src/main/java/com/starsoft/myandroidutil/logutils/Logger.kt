@@ -21,9 +21,9 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 11:34.
 
-class Logger (var tag: String, val toFile: Boolean = false) {
+class Logger(private var tag: String, private val toFile: Boolean = false) {
 
-    companion object{
+    companion object {
 
         val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
@@ -32,18 +32,87 @@ class Logger (var tag: String, val toFile: Boolean = false) {
             if (file.exists()) {
                 file.delete()
             }
-
         }
     }
-    fun d(perform: Boolean = true, msg: () -> String) {
+
+    fun d(perform: Boolean = true, tr: Throwable? = null, msg: () -> String) {
         if (isDebug && perform) {
-            val _msg = msg.invoke()
-            Log.d(
+            var _msg = msg.invoke()
+            tr?.apply { Log.d(
+                    tag, _msg, this
+                )
+            } ?: Log.d(
                 tag, _msg
             )
             if (toFile) {
+                tr?.apply { _msg = _msg + '\n' + Log.getStackTraceString(this) }
                 LogWriter.writeLogMessage("d - $tag $_msg")
             }
         }
     }
+
+    fun i(perform: Boolean = true, tr: Throwable? = null, msg: () -> String) {
+        if (perform) {
+            var _msg = msg.invoke()
+            tr?.apply { Log.i(
+                tag, _msg, this
+            )
+            } ?: Log.i(
+                tag, _msg
+            )
+            if (toFile) {
+                tr?.apply { _msg = _msg + '\n' + Log.getStackTraceString(this) }
+                LogWriter.writeLogMessage("i - $tag $_msg")
+            }
+        }
+    }
+
+    fun w(perform: Boolean = true, tr: Throwable? = null, msg: () -> String) {
+        if (perform) {
+            var _msg = msg.invoke()
+            tr?.apply { Log.w(
+                tag, _msg, this
+            )
+            } ?: Log.w(
+                tag, _msg
+            )
+            if (toFile) {
+                tr?.apply { _msg = _msg + '\n' + Log.getStackTraceString(this) }
+                LogWriter.writeLogMessage("w - $tag $_msg")
+            }
+        }
+    }
+
+    fun e(perform: Boolean = true, tr: Throwable? = null, msg: () -> String) {
+        if (perform) {
+            var _msg = msg.invoke()
+            tr?.apply { Log.e(
+                tag, _msg, this
+            )
+            } ?: Log.e(
+                tag, _msg
+            )
+            if (toFile) {
+                tr?.apply { _msg = _msg + '\n' + Log.getStackTraceString(this) }
+                LogWriter.writeLogMessage("e - $tag $_msg")
+            }
+        }
+    }
+
+    fun v(perform: Boolean = true, tr: Throwable? = null, msg: () -> String) {
+        if (perform) {
+            var _msg = msg.invoke()
+            tr?.apply { Log.v(
+                tag, _msg, this
+            )
+            } ?: Log.v(
+                tag, _msg
+            )
+            if (toFile) {
+                tr?.apply { _msg = _msg + '\n' + Log.getStackTraceString(this) }
+                LogWriter.writeLogMessage("v - $tag $_msg")
+            }
+        }
+    }
+
 }
