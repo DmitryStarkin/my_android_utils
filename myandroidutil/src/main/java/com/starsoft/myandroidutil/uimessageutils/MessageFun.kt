@@ -31,11 +31,11 @@ import com.starsoft.myandroidutil.R
 
 private val DIALOG_TAG: String = "dialogTag"
 
-fun Context.makeShortToast(message: String?) {
+fun Context.makeShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-fun Context.makeLongToast(message: String?) {
+fun Context.makeLongToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }
 

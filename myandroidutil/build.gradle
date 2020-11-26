@@ -32,8 +32,8 @@ android {
         return stdout.toString().trim()
     }
 
-    def appVersionCode = 7
-    def appVersionName = "0.1.6b" + "_" + getGitHash()
+    def appVersionCode = 8
+    def appVersionName = "0.1.7b" + "_" + getGitHash()
 
     defaultConfig {
         minSdkVersion 21
