@@ -28,7 +28,7 @@ import kotlin.concurrent.withLock
 // This File Created at 24.11.2020 18:24.
 
 object LogWriter {
-    val executor = newSingleThreadPool()
+    private val executor = newSingleThreadPool()
     private val lock = ReentrantLock()
     private val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
     var blockLog = false

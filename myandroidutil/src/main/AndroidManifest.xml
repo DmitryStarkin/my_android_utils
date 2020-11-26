@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:allowBackup="false"
+        
         >
         <provider
             android:name="androidx.core.content.FileProvider"
