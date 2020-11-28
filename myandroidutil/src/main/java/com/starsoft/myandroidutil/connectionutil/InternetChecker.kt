@@ -12,12 +12,14 @@
  *  limitations under the License.
  */
 
+@file:JvmName("InternetChecker")
+
 package com.starsoft.myandroidutil.connectionutil
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-
+import com.starsoft.myandroidutil.providers.mainContext
 
 // This File Created at 25.11.2020 14:33.
 
@@ -25,12 +27,24 @@ fun Context.isInternetAvailable(): Boolean {
     return getCapabilitiesNetworkWitchInternetConnected(this)?.let { true } ?: false
 }
 
+fun isInternetAvailable(): Boolean {
+    return mainContext.isInternetAvailable()
+}
+
 fun Context.isInternetAvailableByWiFi(): Boolean {
     return getCapabilitiesNetworkWitchInternetConnected(this)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ?: false
 }
 
+fun isInternetAvailableByWiFi(): Boolean {
+    return  mainContext.isInternetAvailableByWiFi()
+}
+
 fun Context.isInternetAvailableByMobile(): Boolean {
     return getCapabilitiesNetworkWitchInternetConnected(this)?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ?: false
+}
+
+fun isInternetAvailableByMobile(): Boolean {
+    return mainContext.isInternetAvailableByMobile()
 }
 
 private fun getCapabilitiesNetworkWitchInternetConnected(context: Context): NetworkCapabilities? {

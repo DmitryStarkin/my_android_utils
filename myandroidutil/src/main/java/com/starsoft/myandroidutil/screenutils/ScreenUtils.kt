@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("ScreenHelper")
+
 package com.starsoft.myandroidutil.screenutils
 
 import android.graphics.Point

@@ -24,6 +24,7 @@ import android.content.Context
 class ContextProvider(_context: Context) {
 
     companion object {
+
         lateinit var context: Context
     }
 

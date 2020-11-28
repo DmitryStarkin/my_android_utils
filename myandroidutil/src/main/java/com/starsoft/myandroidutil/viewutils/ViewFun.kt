@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("ViewHelper")
+
 package com.starsoft.myandroidutil.viewutils
 
 import android.annotation.SuppressLint
@@ -29,12 +31,14 @@ import androidx.transition.TransitionManager
 // This File Created at 25.11.2020 13:00.
 const val DEFAULT_ANIMATION_DELAY = 600L
 
+@JvmOverloads
 fun View.animation(transition: Transition, duration: Long = DEFAULT_ANIMATION_DELAY){
     transition.duration = duration
     transition.addTarget(this)
     TransitionManager.beginDelayedTransition(this.parent as ViewGroup, transition)
 }
 
+@JvmOverloads
 @SuppressLint("RestrictedApi")
 fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
     val menuHelper = if(theme == null){
@@ -48,6 +52,7 @@ fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
     menuHelper.show()
 }
 
+@JvmOverloads
 fun View.changeVisibilityWithAnimation(visibility: Int, transition: Transition, duration: Long = DEFAULT_ANIMATION_DELAY){
     if(visibility != View.VISIBLE && visibility != View.GONE && visibility != View.GONE ) return
     this.animation(transition, duration)

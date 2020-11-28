@@ -40,6 +40,7 @@ object FileSaver {
     var imageFormat = DEFAULT_IMAGE_FORMAT
     var overwriteFiles = true
 
+    @JvmOverloads
     fun saveFromAssets(from: String, to: String, directory: DIRECTORY, onSusses: (File) -> Unit, onError: (Throwable) -> Unit = ::errorStub) {
         executor.launch({ f -> onSusses.invoke(f) }, { e -> onError.invoke(e) }) {
 
@@ -49,6 +50,7 @@ object FileSaver {
 
     }
 
+    @JvmOverloads
     fun saveFromInputStream(from: InputStream, to: String, directory: DIRECTORY, onSusses: (File) -> Unit, onError: (Throwable) -> Unit = ::errorStub) {
         executor.launch({ f -> onSusses.invoke(f) }, { e -> onError.invoke(e) }) {
 
@@ -57,6 +59,7 @@ object FileSaver {
 
     }
 
+    @JvmOverloads
     fun saveBitmap(from: Bitmap, to: String, directory: DIRECTORY, onSusses: (File) -> Unit, onError: (Throwable) -> Unit = ::errorStub) {
         executor.launch ({ f -> onSusses.invoke(f) }, { e -> onError.invoke(e) }) {
 

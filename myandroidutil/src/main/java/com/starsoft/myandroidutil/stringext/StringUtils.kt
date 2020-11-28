@@ -12,7 +12,10 @@
  *  limitations under the License.
  */
 
+@file:JvmName("StringUtils")
+
 package com.starsoft.myandroidutil.stringext
+
 
 
 // This File Created at 25.11.2020 13:33.

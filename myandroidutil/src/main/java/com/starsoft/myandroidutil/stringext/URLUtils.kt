@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("URLHelper")
+
 package com.starsoft.myandroidutil.stringext
 
 

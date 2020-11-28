@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("AccessibilityHelper")
+
 package com.starsoft.myandroidutil.accessibilityutils
 
 import android.os.Bundle
@@ -56,6 +58,7 @@ fun AccessibilityNodeInfo.insertText(text: String): Boolean {
     })
 }
 
+@JvmOverloads
 fun AccessibilityNodeInfo.setText(arguments: Bundle? = null): Boolean {
     if (!this.supportAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_TEXT) || !this.isEnabled) return false
     return this.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)

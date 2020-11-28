@@ -7,9 +7,9 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Version:
 
-0.1.8b current
+0.2.0b current
 
-add Accessibility function
+optimise for call from Java code
 
 ## Installation:
 

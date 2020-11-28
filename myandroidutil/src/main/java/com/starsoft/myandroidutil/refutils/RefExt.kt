@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("ClassHelper")
+
 package com.starsoft.myandroidutil.refutils
 
 

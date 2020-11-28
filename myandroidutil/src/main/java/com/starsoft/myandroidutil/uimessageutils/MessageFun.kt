@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("MessageHelper")
+
 package com.starsoft.myandroidutil.uimessageutils
 
 import android.app.AlertDialog
@@ -25,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.starsoft.myandroidutil.R
+import com.starsoft.myandroidutil.providers.mainContext
 
 
 // This File Created at 25.11.2020 13:38.
@@ -35,10 +38,19 @@ fun Context.makeShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
+fun makeShortToast(message: String) {
+    mainContext.makeShortToast(message)
+}
+
 fun Context.makeLongToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }
 
+fun makeLongToast(message: String) {
+    mainContext.makeLongToast(message)
+}
+
+@JvmOverloads
 fun View.makeSnackBarMessage(
     message: String,
     isError: Boolean = false,
@@ -54,6 +66,7 @@ fun View.makeSnackBarMessage(
     bar.show()
 }
 
+@JvmOverloads
 fun AppCompatActivity.makeDialogMessage(
     bodyLayout: Int? = null,
     message: String? = null,
@@ -69,8 +82,8 @@ fun AppCompatActivity.makeDialogMessage(
         .show(this.supportFragmentManager, DIALOG_TAG)
 }
 
-fun makePickerDialog(
-    activity: AppCompatActivity,
+@JvmOverloads
+fun AppCompatActivity.makePickerDialog(
     message: String,
     minValue: Int,
     maxValue: Int,
@@ -87,7 +100,7 @@ fun makePickerDialog(
         okButtonName,
         cancelButtonName
     ).setListener(listener)
-        .show(activity.supportFragmentManager, DIALOG_TAG)
+        .show(this.supportFragmentManager, DIALOG_TAG)
 }
 
 /**

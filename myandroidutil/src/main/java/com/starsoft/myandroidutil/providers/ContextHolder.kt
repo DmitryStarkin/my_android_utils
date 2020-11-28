@@ -12,10 +12,11 @@
  *  limitations under the License.
  */
 
+@file:JvmName("ContextHolder")
+
 package com.starsoft.myandroidutil.providers
 
 
 // This File Created at 25.11.2020 14:51.
-
 val mainContext
-get() = ContextProvider.context
+    @JvmName("mainContext")get() = ContextProvider.context

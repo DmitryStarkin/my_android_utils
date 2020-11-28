@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("LogHelper")
+
 package com.starsoft.myandroidutil.logutils
 
 import android.content.Context
@@ -41,6 +43,10 @@ fun Context.getLogFile(): File {
     return File(this.getLogsDir(), FILE_NAME + FILE_EXTENSIONS)
 }
 
+fun getLogFile(): File {
+    return mainContext.getLogFile()
+}
+
 fun Context.generateLogFile(): File {
 
     val file = getLogFile()
@@ -53,6 +59,10 @@ fun Context.generateLogFile(): File {
     return file
 }
 
+fun generateLogFile(): File {
+    return mainContext.generateLogFile()
+}
+
 private fun Context.getLogsDir(): File {
 
     val dir = File(this.cacheDir.toString() + "/" + "logs" + "/")
@@ -62,9 +72,10 @@ private fun Context.getLogsDir(): File {
     return dir
 }
 
-fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
+@JvmOverloads
+fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
 
-    val file = mainContext.getLogFile()
+    val file = this.getLogFile()
     if (file.exists() && perform) {
         LogWriter.writeLogMessage("Log send",
             { LogWriter.blockLog = true
@@ -81,11 +92,18 @@ fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t050680308
     }
 }
 
-fun sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
+@JvmOverloads
+fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
+    mainContext.sendLog(perform, eMails)
+}
+
+
+@JvmOverloads
+fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
 
     if (fileToSend.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
-        val contentUri: Uri = FileProvider.getUriForFile(mainContext, APPLICATION_ID + ".fileprovider", fileToSend)
+        val contentUri: Uri = FileProvider.getUriForFile(this, APPLICATION_ID + ".fileprovider", fileToSend)
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
         intent.type = "message/rfc822"
@@ -97,18 +115,23 @@ fun sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fi
         intent.putExtra(Intent.EXTRA_TEXT, fileToSend.name + " $time file in attachment")
 
         fileToSend.name
-        val packageManager = mainContext.applicationContext.packageManager
+        val packageManager = this.applicationContext.packageManager
         val matches: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
 
         if (matches.isNotEmpty()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             val choicer = Intent.createChooser(intent, "Send log witch")
             choicer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            mainContext.applicationContext.startActivity(choicer);
+            this.applicationContext.startActivity(choicer);
         } else {
-            mainContext.makeLongToast("Impossible send this file")
+            this.makeLongToast("Impossible send this file")
         }
     } else {
-        mainContext.makeLongToast("File not exists")
+        this.makeLongToast("File not exists")
     }
+}
+
+@JvmOverloads
+fun sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
+    mainContext.sendFileToEmail(eMails, fileToSend)
 }

@@ -21,9 +21,9 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 11:34.
 
-class Logger(private val tag: String, private val toFile: Boolean = false) {
+class Logger @JvmOverloads constructor(private val tag: String, var toFile: Boolean = false) {
 
-    companion object {
+    private companion object {
 
         val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
@@ -34,6 +34,7 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
             }
         }
     }
+
 
     fun d(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (isDebug && perform) {
@@ -49,6 +50,11 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
                 LogWriter.writeLogMessage("d - $tag $_msg")
             }
         }
+    }
+
+    @JvmOverloads
+    fun d(perform: Boolean = true, t: Throwable? = null, msg: String) {
+       d(perform,t){msg}
     }
 
     fun i(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
@@ -67,6 +73,12 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
         }
     }
 
+    @JvmOverloads
+    fun i(perform: Boolean = true, t: Throwable? = null, msg: String) {
+        i(perform,t){msg}
+    }
+
+
     fun w(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             var _msg = msg.invoke()
@@ -81,6 +93,11 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
                 LogWriter.writeLogMessage("w - $tag $_msg")
             }
         }
+    }
+
+    @JvmOverloads
+    fun w(perform: Boolean = true, t: Throwable? = null, msg: String) {
+        w(perform,t){msg}
     }
 
     fun e(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
@@ -99,6 +116,11 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
         }
     }
 
+    @JvmOverloads
+    fun e(perform: Boolean = true, t: Throwable? = null, msg: String) {
+        e(perform,t){msg}
+    }
+
     fun v(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             var _msg = msg.invoke()
@@ -115,4 +137,8 @@ class Logger(private val tag: String, private val toFile: Boolean = false) {
         }
     }
 
+    @JvmOverloads
+    fun v(perform: Boolean = true, t: Throwable? = null, msg: String) {
+        v(perform,t){msg}
+    }
 }

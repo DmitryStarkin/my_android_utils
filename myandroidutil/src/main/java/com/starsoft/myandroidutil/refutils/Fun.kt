@@ -12,6 +12,8 @@
  *  limitations under the License.
  */
 
+@file:JvmName("BuildConfigHelper")
+
 package com.starsoft.myandroidutil.refutils
 
 import android.content.Context
