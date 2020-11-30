@@ -23,7 +23,9 @@
         </intent>
     </queries>
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"
+        tools:node="merge"
+        />
 
     <application
 
