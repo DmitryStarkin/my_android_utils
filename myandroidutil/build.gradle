@@ -32,8 +32,8 @@ android {
         return stdout.toString().trim()
     }
 
-    def appVersionCode = 12
-    def appVersionName = "0.3.0b" + "_" + getGitHash()
+    def appVersionCode = 13
+    def appVersionName = "0.3.1b" + "_" + getGitHash()
 
     defaultConfig {
         minSdkVersion 21
@@ -68,5 +68,5 @@ dependencies {
 
 
     implementation 'com.github.DmitryStarkin:android_async_lib:0.3.0b'
-    implementation 'androidx.security:security-crypto:1.1.0-alpha02'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 }
