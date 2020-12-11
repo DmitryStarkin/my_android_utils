@@ -21,7 +21,7 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 11:34.
 
-class Logger @JvmOverloads constructor(private val tag: String, var toFile: Boolean = false) {
+class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = false) {
 
     private companion object {
 

@@ -7,9 +7,9 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Version:
 
-0.3.1b current
+0.4.0b current
 
-pref add
+Log auto TAG
 
 ## Installation:
 
