@@ -18,6 +18,7 @@ package com.starsoft.myandroidutil.refutils
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
+import com.starsoft.myandroidutil.providers.mainContext
 
 
 // This File Created at 25.11.2020 12:22.
@@ -35,4 +36,8 @@ fun Context.getBuildConfigValue(fieldName: String): Any? {
         e.printStackTrace()
     }
     return null
+}
+
+fun getBuildConfigValue(fieldName: String): Any? {
+    return mainContext.getBuildConfigValue(fieldName)
 }
