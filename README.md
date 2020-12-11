@@ -7,9 +7,9 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Version:
 
-0.2.0b current
+0.3.1b current
 
-optimise for call from Java code
+pref add
 
 ## Installation:
 
