@@ -40,3 +40,13 @@ fun View.pointPositionOnScreen(): Point {
     this.getLocationOnScreen(location)
     return Point(location[0], location[1])
 }
+
+/**
+ * get display size
+ * @return display size
+ */
+private fun View.getDisplaySizePoint(): Point {
+    val displaySize = Point()
+    this.display?.getRealSize(displaySize)
+    return displaySize
+}

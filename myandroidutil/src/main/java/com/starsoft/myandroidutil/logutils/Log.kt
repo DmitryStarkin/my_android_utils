@@ -16,18 +16,16 @@
 
 package com.starsoft.myandroidutil.logutils
 
-
-import com.starsoft.myandroidutil.providers.mainContext
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 // This File Created at 28.11.2020 13:41.
 
-val mainLogger: Logger by lazy {
+private val mainLogger: Logger by lazy {
     Logger("CommonLog")
 }
 
-private val mName = "com.starsoft.myandroidutil.logutils.Log"
+private const val mName = "com.starsoft.myandroidutil.logutils.Log"
 
 private val lock = ReentrantLock()
 

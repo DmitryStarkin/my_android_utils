@@ -5,11 +5,9 @@ contains functions usually used in my projects
 the library is not intended for distribution, you can use it at your own risk
 
 
-## Version:
+## Current Version:
 
-0.4.0b current
-
-Log auto TAG
+0.4.1b
 
 ## Installation:
 

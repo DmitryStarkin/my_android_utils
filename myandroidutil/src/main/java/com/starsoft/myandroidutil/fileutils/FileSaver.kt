@@ -32,7 +32,7 @@ import java.lang.Exception
 
 object FileSaver {
 
-    private val DEFAULT_COMRESSION = 80
+    private const val DEFAULT_COMRESSION = 80
     private val DEFAULT_IMAGE_FORMAT = Bitmap.CompressFormat.JPEG
     private val executor = newSingleThreadPool()
 
