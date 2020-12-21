@@ -16,10 +16,13 @@
 
 package com.starsoft.myandroidutil.accessibilityutils
 
+import android.content.Context
 import android.os.Bundle
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.EditText
 import android.widget.TextView
+import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
 import com.starsoft.myandroidutil.stringext.insertTo
 
@@ -43,8 +46,8 @@ fun AccessibilityNodeInfo.insertText(text: String): Boolean {
 
         return this.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply {
             putCharSequence(
-                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-                text
+                    AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                    text
             )
         })
     }
@@ -52,8 +55,8 @@ fun AccessibilityNodeInfo.insertText(text: String): Boolean {
 
     return this.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply {
         putCharSequence(
-            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-            oldText.insertTo(cursorPosition, text)
+                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                oldText.insertTo(cursorPosition, text)
         )
     })
 }
@@ -72,8 +75,8 @@ fun AccessibilityNodeInfo.changeText(text: CharSequence): Boolean {
     this.refresh()
     return setText(Bundle().apply {
         putCharSequence(
-            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-            text
+                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                text
         )
     })
 }
@@ -102,4 +105,36 @@ fun AccessibilityNodeInfo.getTextFrom(): CharSequence {
         e.printStackTrace()
     }
     return ""
+}
+
+/**
+ * helper for get AccessibilityManager
+ * @return AccessibilityManager
+ */
+fun getAccessibilityManager(): AccessibilityManager {
+    return mainContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+}
+
+/**
+ * checks whether the TouchExploration is enabled
+ * @return true if enabled false otherwise
+ */
+fun isTouchExplorationEnabled(): Boolean {
+    return getAccessibilityManager().isTouchExplorationEnabled
+}
+
+/**
+ * checks whether the accessibility service is enabled
+ * @param serviceId accessibility service ID
+ * @return true if enabled false otherwise
+ */
+fun isAccessibilityServiceEnabled(serviceId: String): Boolean {
+    for (info in getAccessibilityManager().getEnabledAccessibilityServiceList(
+            AccessibilityEvent.TYPES_ALL_MASK
+    )) {
+        if (serviceId == info.id) {
+            return true
+        }
+    }
+    return false
 }

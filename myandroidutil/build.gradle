@@ -21,7 +21,7 @@ group ='com.github.DmitryStarkin'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     def getGitHash = { ->
         def stdout = new ByteArrayOutputStream()
@@ -32,8 +32,8 @@ android {
         return stdout.toString().trim()
     }
 
-    def appVersionCode = 15
-    def appVersionName = "0.4.1b" + "_" + getGitHash()
+    def appVersionCode = 16
+    def appVersionName = "0.4.2b" + "_" + getGitHash()
 
     defaultConfig {
         minSdkVersion 21

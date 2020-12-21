@@ -7,7 +7,7 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Current Version:
 
-0.4.1b
+0.4.2b
 
 ## Installation:
 
