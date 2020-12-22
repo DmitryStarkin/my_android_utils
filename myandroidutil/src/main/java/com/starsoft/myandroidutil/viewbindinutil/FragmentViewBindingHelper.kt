@@ -24,13 +24,12 @@ package com.starsoft.myandroidutil.viewbindinutil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 @Deprecated(
-        message = "Use valueHolder(initialiseValue: () -> T) instead",
-        replaceWith = ReplaceWith("LifecycleOwner.valueHolder(initialiseValue: () -> T)")
+        message = "Use LifecycleOwner.valueHolder(initialiseValue: () -> T) instead",
+        replaceWith = ReplaceWith("valueHolder(initialise)", "com.starsoft.myandroidutil.lifecicleutil.valueHolder")
 )
 fun <T> Fragment.viewLifecycleLazy(initialise: () -> T): ReadOnlyProperty<Fragment, T> =
     object : ReadOnlyProperty<Fragment, T>, DefaultLifecycleObserver {
