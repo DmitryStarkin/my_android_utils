@@ -25,12 +25,12 @@ private val mainLogger: Logger by lazy {
     Logger("CommonLog")
 }
 
-private const val mName = "com.starsoft.myandroidutil.logutils.Log"
+private const val M_NAME = "com.starsoft.myandroidutil.logutils.Log"
 
 private val lock = ReentrantLock()
 
 @JvmOverloads
-fun d(toFile: Boolean = false, t: Throwable? = null, msg: String = " ") {
+fun d(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
         mainLogger.tag =  getTag()
         val tf = mainLogger.toFile
@@ -50,8 +50,17 @@ fun log_d(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
+fun log_d(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+    lock.withLock {
+        mainLogger.tag = tag ?: getTag()
+        val tf = mainLogger.toFile
+        mainLogger.d(t = t) { msg.invoke() }
+        mainLogger.toFile = tf
+    }
+}
+
 @JvmOverloads
-fun i(toFile: Boolean = false, t: Throwable? = null, msg: String = " ") {
+fun i(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
         mainLogger.tag =  getTag()
         val tf = mainLogger.toFile
@@ -71,8 +80,17 @@ fun log_i(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
+fun log_i(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+    lock.withLock {
+        mainLogger.tag = tag ?: getTag()
+        val tf = mainLogger.toFile
+        mainLogger.i(t = t) { msg.invoke() }
+        mainLogger.toFile = tf
+    }
+}
+
 @JvmOverloads
-fun w(toFile: Boolean = false, t: Throwable? = null, msg: String = " ") {
+fun w(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
         mainLogger.tag =  getTag()
         val tf = mainLogger.toFile
@@ -93,8 +111,18 @@ fun log_w(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
 
 }
 
+fun log_w(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+    lock.withLock {
+        mainLogger.tag = tag ?: getTag()
+        val tf = mainLogger.toFile
+        mainLogger.w(t = t) { msg.invoke() }
+        mainLogger.toFile = tf
+    }
+
+}
+
 @JvmOverloads
-fun e(toFile: Boolean = false, t: Throwable? = null, msg: String = " ") {
+fun e(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
         mainLogger.tag =  getTag()
         val tf = mainLogger.toFile
@@ -114,8 +142,17 @@ fun log_e(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
+fun log_e(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+    lock.withLock {
+        mainLogger.tag = tag ?: getTag()
+        val tf = mainLogger.toFile
+        mainLogger.e(t = t) { msg.invoke() }
+        mainLogger.toFile = tf
+    }
+}
+
 @JvmOverloads
-fun v(toFile: Boolean = false, t: Throwable? = null, msg: String = " ") {
+fun v(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
         mainLogger.tag =  getTag()
         val tf = mainLogger.toFile
@@ -135,12 +172,21 @@ fun log_v(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
+fun log_v(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+    lock.withLock {
+        mainLogger.tag = tag ?: getTag()
+        val tf = mainLogger.toFile
+        mainLogger.v(t = t) { msg.invoke() }
+        mainLogger.toFile = tf
+    }
+}
+
 //TODO requires thorough testing
 private fun getTag(): String{
 
         val stack = Throwable().stackTrace
         for(frame in stack){
-            if(frame.className != mName){
+            if(frame.className != M_NAME){
                 return frame.className.substringAfterLast(".") + "_" + frame.methodName
             }
         }
