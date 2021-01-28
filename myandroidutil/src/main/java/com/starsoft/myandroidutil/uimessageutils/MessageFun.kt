@@ -27,12 +27,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.starsoft.myandroidutil.R
+import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 
 // This File Created at 25.11.2020 13:38.
 
 private val DIALOG_TAG: String = "dialogTag"
+
+private val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
 fun Context.makeShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -48,6 +52,18 @@ fun Context.makeLongToast(message: String) {
 
 fun makeLongToast(message: String) {
     mainContext.makeLongToast(message)
+}
+
+fun makeLongDebugToast(message: String){
+    if(isDebug){
+        makeLongToast(message)
+    }
+}
+
+fun makeShortDebugToast(message: String){
+    if(isDebug){
+        makeShortToast(message)
+    }
 }
 
 @JvmOverloads
