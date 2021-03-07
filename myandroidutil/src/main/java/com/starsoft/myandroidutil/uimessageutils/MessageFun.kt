@@ -38,33 +38,25 @@ private val DIALOG_TAG: String = "dialogTag"
 
 private val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
-fun Context.makeShortToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-}
+fun Context.makeShortToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_SHORT).apply { show() }
 
-fun makeShortToast(message: String) {
-    mainContext.makeShortToast(message)
-}
+fun makeShortToast(message: String): Toast = mainContext.makeShortToast(message)
 
-fun Context.makeLongToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-}
+fun Context.makeLongToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_LONG).apply { show() }
 
-fun makeLongToast(message: String) {
-    mainContext.makeLongToast(message)
-}
+fun makeLongToast(message: String): Toast = mainContext.makeLongToast(message)
 
-fun makeLongDebugToast(message: String){
+fun makeLongDebugToast(message: String): Toast? =
     if(isDebug){
         makeLongToast(message)
-    }
-}
+    } else {null}
 
-fun makeShortDebugToast(message: String){
+
+fun makeShortDebugToast(message: String): Toast? =
     if(isDebug){
         makeShortToast(message)
-    }
-}
+    } else {null}
+
 
 @JvmOverloads
 fun View.makeSnackBarMessage(
