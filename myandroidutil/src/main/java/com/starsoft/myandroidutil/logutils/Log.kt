@@ -50,7 +50,7 @@ fun log_d(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
-fun log_d(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+fun log_dT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
         mainLogger.tag = tag ?: getTag()
         val tf = mainLogger.toFile
@@ -80,7 +80,7 @@ fun log_i(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
-fun log_i(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+fun log_iT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
         mainLogger.tag = tag ?: getTag()
         val tf = mainLogger.toFile
@@ -111,7 +111,7 @@ fun log_w(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
 
 }
 
-fun log_w(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+fun log_wT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
         mainLogger.tag = tag ?: getTag()
         val tf = mainLogger.toFile
@@ -142,7 +142,7 @@ fun log_e(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
-fun log_e(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+fun log_eT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
         mainLogger.tag = tag ?: getTag()
         val tf = mainLogger.toFile
@@ -172,7 +172,7 @@ fun log_v(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" 
     }
 }
 
-fun log_v(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
+fun log_vT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
         mainLogger.tag = tag ?: getTag()
         val tf = mainLogger.toFile
