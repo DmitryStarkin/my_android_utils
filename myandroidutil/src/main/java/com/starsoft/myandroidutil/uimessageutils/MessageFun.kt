@@ -34,39 +34,54 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 13:38.
 
-private val DIALOG_TAG: String = "dialogTag"
+private const val DIALOG_TAG: String = "dialogTag"
 
 private val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
-fun Context.makeShortToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_SHORT).apply { show() }
+fun Context.makeShortToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
+    if (message.isNotEmpty()) {
+        show()
+    }
+}
 
 fun makeShortToast(message: String): Toast = mainContext.makeShortToast(message)
 
-fun Context.makeLongToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_LONG).apply { show() }
+fun Context.makeLongToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_LONG).apply {
+    if (message.isNotEmpty()) {
+        show()
+    }
+}
 
 fun makeLongToast(message: String): Toast = mainContext.makeLongToast(message)
 
-fun makeLongDebugToast(message: String): Toast? =
-    if(isDebug){
-        makeLongToast(message)
-    } else {null}
+fun Context.makeLongDebugToast(message: String): Toast? =
+        if (isDebug) {
+            this.makeLongToast(message)
+        } else {
+            null
+        }
 
 
-fun makeShortDebugToast(message: String): Toast? =
-    if(isDebug){
-        makeShortToast(message)
-    } else {null}
+fun Context.makeShortDebugToast(message: String): Toast? =
+        if (isDebug) {
+            this.makeShortToast(message)
+        } else {
+            null
+        }
 
+fun makeShortDebugToast(message: String): Toast? = mainContext.makeShortDebugToast(message)
+
+fun makeLongDebugToast(message: String): Toast? = mainContext.makeLongDebugToast(message)
 
 @JvmOverloads
 fun View.makeSnackBarMessage(
-    message: String,
-    isError: Boolean = false,
-    duration: Int? = null,
-    action: ((View) -> Unit)? = null
+        message: String,
+        isError: Boolean = false,
+        duration: Int? = null,
+        action: ((View) -> Unit)? = null
 ) {
     val bar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
-    duration?.apply { bar.setDuration(this) }
+    duration?.apply { bar.duration = this }
     action?.apply { bar.setAction(R.string.button_ok, action) }
     if (isError) {
         bar.applyErrorStyle()
@@ -76,39 +91,39 @@ fun View.makeSnackBarMessage(
 
 @JvmOverloads
 fun AppCompatActivity.makeDialogMessage(
-    bodyLayout: Int? = null,
-    message: String? = null,
-    body: String? = null,
-    okButtonName: String? = null,
-    cancelButtonName: String? = null,
-    OkListener: ((DialogInterface, Int) -> Unit)? = null,
-    cancelListener: ((DialogInterface, Int) -> Unit)? = null
+        bodyLayout: Int? = null,
+        message: String? = null,
+        body: String? = null,
+        okButtonName: String? = null,
+        cancelButtonName: String? = null,
+        OkListener: ((DialogInterface, Int) -> Unit)? = null,
+        cancelListener: ((DialogInterface, Int) -> Unit)? = null
 ) {
     MessageDialog.newInstance(bodyLayout, message, body, okButtonName, cancelButtonName)
-        .setOKListener(OkListener)
-        .setCancelListener(cancelListener)
-        .show(this.supportFragmentManager, DIALOG_TAG)
+            .setOKListener(OkListener)
+            .setCancelListener(cancelListener)
+            .show(this.supportFragmentManager, DIALOG_TAG)
 }
 
 @JvmOverloads
 fun AppCompatActivity.makePickerDialog(
-    message: String,
-    minValue: Int,
-    maxValue: Int,
-    currentValue: Int,
-    okButtonName: String? = null,
-    cancelButtonName: String? = null,
-    listener: (DialogInterface, Int, Int) -> Unit
+        message: String,
+        minValue: Int,
+        maxValue: Int,
+        currentValue: Int,
+        okButtonName: String? = null,
+        cancelButtonName: String? = null,
+        listener: (DialogInterface, Int, Int) -> Unit
 ) {
     NumberPickerDialog.newInstance(
-        message,
-        minValue,
-        maxValue,
-        currentValue,
-        okButtonName,
-        cancelButtonName
+            message,
+            minValue,
+            maxValue,
+            currentValue,
+            okButtonName,
+            cancelButtonName
     ).setListener(listener)
-        .show(this.supportFragmentManager, DIALOG_TAG)
+            .show(this.supportFragmentManager, DIALOG_TAG)
 }
 
 /**
@@ -117,10 +132,10 @@ fun AppCompatActivity.makePickerDialog(
  * @param layoutId - id of layout res with dialog UI
  */
 fun Context.createDialog(@LayoutRes layoutId: Int): AlertDialog? = AlertDialog.Builder(this)
-    .setView(layoutId).create().apply {
-        setCanceledOnTouchOutside(false)
-        setCancelable(true)
-    }
+        .setView(layoutId).create().apply {
+            setCanceledOnTouchOutside(false)
+            setCancelable(true)
+        }
 
 /**
  * Add red bg to [Snackbar]
