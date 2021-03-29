@@ -58,6 +58,11 @@ abstract class BasePreferences {
     }
 
     @JvmOverloads
+    fun setFloatPref(key: String, value: Float, isCommit: Boolean = false) {
+        getPreferences().setFloatPref(key, value, isCommit)
+    }
+
+    @JvmOverloads
     fun setStringPref(key: String, value: String, isCommit: Boolean = false) {
         getPreferences().setStringPref(key, value, isCommit)
     }

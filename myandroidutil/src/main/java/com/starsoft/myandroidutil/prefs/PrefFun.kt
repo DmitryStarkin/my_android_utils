@@ -123,3 +123,18 @@ fun SharedPreferences.setStringSetPref(key: String, value: MutableSet<String>, i
             }
         }
 }
+
+@SuppressLint("ApplySharedPref")
+@JvmOverloads
+fun SharedPreferences.setFloatPref(key: String, value: Float, isCommit: Boolean = false) {
+
+    this.edit()
+            .putFloat(key, value)
+            .apply {
+                if (isCommit) {
+                    this.commit()
+                } else {
+                    this.apply()
+                }
+            }
+}
