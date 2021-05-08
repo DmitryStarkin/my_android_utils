@@ -15,11 +15,9 @@
 package com.starsoft.myandroidutil.fileutils
 
 import android.graphics.Bitmap
-import android.os.Environment
-import com.starsoft.myandroidutil.logutils.LogWriter
-import com.starsoft.myandroidutil.logutils.Logger
 import com.starsoft.myandroidutil.providers.ContextProvider
-import com.starsoft.simpleandroidasynclibrary.core.executorfun.runOnExecutor
+import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
+import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import com.starsoft.simpleandroidasynclibrary.core.launch
 import com.starsoft.simpleandroidasynclibrary.executors.newSingleThreadPool
 import java.io.File
@@ -114,47 +112,6 @@ object FileSaver {
         return file
     }
 
-    private fun generateFile(filename: String, directory: DIRECTORY): File {
-        val file: File
-
-        when (directory) {
-
-            DIRECTORY.CACH_IMAGES -> {
-
-                file = File(getCacheDir("images"), "/$filename")
-            }
-            DIRECTORY.CACH_FILES -> {
-
-                file = File(getCacheDir("files"), "/$filename")
-            }
-
-            DIRECTORY.CACH_LOGS -> {
-
-                file = File(getCacheDir("logs"), "/$filename")
-            }
-            DIRECTORY.EXTERNAL_DOCUMENTS -> {
-
-                file = File(ContextProvider.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" + filename)
-            }
-        }
-
-        return file
-    }
-
-    private fun getCacheDir(name: String): File {
-
-        val dir = File(ContextProvider.context.cacheDir.toString() + "/" + name + "/")
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-        return dir
-    }
-
-    enum class DIRECTORY {
-
-        CACH_IMAGES,
-        CACH_FILES,
-        CACH_LOGS,
-        EXTERNAL_DOCUMENTS
-    }
+    private fun generateFile(filename: String, directory: DIRECTORY): File =
+        File(ContextProvider.context.getMyCacheDir(directory), "/$filename")
 }

@@ -20,7 +20,10 @@ import android.os.Message
 
 
 // This File Created at 25.11.2020 13:35.
-
+@Deprecated(
+        message = "Use ScheduledJobTimer instead",
+        replaceWith = ReplaceWith("ScheduledJobTimer()", "com.starsoft.myandroidutil.timeutils.ScheduledJobTimer")
+)
 object Timer : Handler(Looper.getMainLooper()){
 
     private const val WENT_OFF = 1

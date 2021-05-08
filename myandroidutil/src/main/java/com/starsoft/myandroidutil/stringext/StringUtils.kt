@@ -16,11 +16,69 @@
 
 package com.starsoft.myandroidutil.stringext
 
+import android.content.res.Configuration
+import android.content.res.Resources.NotFoundException
+import android.graphics.Typeface
+import android.os.Build
+import android.os.LocaleList
+import android.text.Spannable
+import android.text.style.StyleSpan
+import androidx.annotation.IntRange
+import androidx.annotation.RequiresApi
+import androidx.core.text.toSpannable
+import com.starsoft.myandroidutil.providers.mainContext
+import java.util.*
 
 
 // This File Created at 25.11.2020 13:33.
+const val EMPTY_STRING =""
+private val COMMON_LOCALE = Locale.US
 
 fun String.insertTo(position: Int, string: CharSequence): CharSequence{
 
     return StringBuilder(this).insert(position, string) as CharSequence
+}
+
+fun CharSequence.getFirstSafety(): Char =
+    if(isNotBlank()){
+        first()
+    } else {
+        Character.MIN_VALUE
+    }
+
+fun CharSequence.applyTypefaceStyle(@IntRange(from = 0, to = Typeface.BOLD_ITALIC.toLong()) style: Int
+): Spannable = this.toSpannable().run {
+    setSpan(
+        StyleSpan(style),
+        0, length,
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    this
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+private fun getStringByLocale(locale: Locale, id: Int): String? {
+    var string: String? = null
+    try {
+        val commonString: String = getFromResources(COMMON_LOCALE, id)
+        if (locale.language == COMMON_LOCALE.getLanguage()) {
+            return commonString
+        }
+        string = getFromResources(locale, id)
+        if (string == commonString) {
+            string = null
+        }
+    } catch (e: NotFoundException) {
+        e.printStackTrace()
+    }
+    return string
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+private fun getFromResources(locale: Locale, id: Int): String {
+    val baseResources = mainContext.resources
+    val config = Configuration(baseResources.configuration)
+    config.setLocales(LocaleList(locale))
+    val tempContext = mainContext.createConfigurationContext(config)
+    return tempContext.getString(id)
 }

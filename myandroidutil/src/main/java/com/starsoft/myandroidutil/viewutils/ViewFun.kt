@@ -32,9 +32,10 @@ import androidx.transition.TransitionManager
 const val DEFAULT_ANIMATION_DELAY = 600L
 
 @JvmOverloads
-fun View.animation(transition: Transition, duration: Long = DEFAULT_ANIMATION_DELAY){
+fun View.animation(transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
     transition.duration = duration
     transition.addTarget(this)
+    transition.apply { listener?.apply { addListener(this) } }
     TransitionManager.beginDelayedTransition(this.parent as ViewGroup, transition)
 }
 
@@ -53,8 +54,8 @@ fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
 }
 
 @JvmOverloads
-fun View.changeVisibilityWithAnimation(visibility: VisibilityState, transition: Transition, duration: Long = DEFAULT_ANIMATION_DELAY){
-    this.animation(transition, duration)
+fun View.changeVisibilityWithAnimation(visibility: VisibilityState, transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
+    this.animation(transition, listener, duration)
     this.visibility = visibility.state
 }
 
@@ -62,4 +63,26 @@ enum class VisibilityState(val state: Int) {
     GONE(View.GONE),
     VISIBLE(View.VISIBLE),
     INVISIBLE(View.INVISIBLE)
+}
+
+interface AnimationListener : Transition.TransitionListener {
+    override fun onTransitionStart(transition: Transition) {
+//        stub
+    }
+
+    override fun onTransitionEnd(transition: Transition) {
+        //        stub
+    }
+
+    override fun onTransitionCancel(transition: Transition) {
+        //        stub
+    }
+
+    override fun onTransitionPause(transition: Transition) {
+        //        stub
+    }
+
+    override fun onTransitionResume(transition: Transition) {
+        //        stub
+    }
 }

@@ -17,4 +17,20 @@
     <string name="button_ok" translatable="false">OK</string>
     <string name="button_setting">Settings</string>
     <string name="button_cancel">Cancel</string>
+
+    <string-array name="time_intervals">
+        <item>" year"</item>
+        <item>" month"</item>
+        <item>" day"</item>
+        <item>" hour"</item>
+        <item>" minute"</item>
+        <item>" second"</item>
+    </string-array>
+
+    <string name="ago">" ago."</string>
+    <string name="zero_relative_string">0 seconds ago.</string>
+    <string name="plural_suffix">s</string>
+
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

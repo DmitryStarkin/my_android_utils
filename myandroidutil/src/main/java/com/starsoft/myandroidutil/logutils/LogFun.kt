@@ -24,6 +24,8 @@ import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.fileutils.FileSaver
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
+import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import com.starsoft.myandroidutil.uimessageutils.makeLongToast
 import java.io.File
 import java.io.FileInputStream
@@ -40,7 +42,7 @@ private val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
 private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 
 fun Context.getLogFile(): File {
-    return File(this.getLogsDir(), FILE_NAME + FILE_EXTENSIONS)
+    return File(this.getMyCacheDir(DIRECTORY.CACH_LOGS), FILE_NAME + FILE_EXTENSIONS)
 }
 
 fun getLogFile(): File {
@@ -63,15 +65,6 @@ fun generateLogFile(): File {
     return mainContext.generateLogFile()
 }
 
-private fun Context.getLogsDir(): File {
-
-    val dir = File(this.cacheDir.toString() + "/" + "logs" + "/")
-    if (!dir.exists()) {
-        dir.mkdirs()
-    }
-    return dir
-}
-
 @JvmOverloads
 fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
 
@@ -81,7 +74,7 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
             { LogWriter.blockLog = true
                 LogWriter.reset()
                 FileSaver.saveFromInputStream(
-                    FileInputStream(file), SEND_FILE_NAME, FileSaver.DIRECTORY.CACH_LOGS,
+                    FileInputStream(file), SEND_FILE_NAME, DIRECTORY.CACH_LOGS,
                     onSusses = { f ->
                         LogWriter.blockLog = false
                         sendFileToEmail(eMails, f)
