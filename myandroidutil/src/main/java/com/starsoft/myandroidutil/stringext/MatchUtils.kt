@@ -62,7 +62,7 @@ fun String?.isValidFileName(ext: String): Boolean {
 
 fun String?.isValidUserName(): Boolean {
     if (this == null || this.isEmpty()) return false
-    return this.matches(Regex("^[a-z0-9_-]{3,16}\$"))
+    return this.matches(Regex("^[A-Za-z0-9_-]{3,16}\$"))
 }
 
 fun String?.isValidCreditCardNumber(): Boolean {

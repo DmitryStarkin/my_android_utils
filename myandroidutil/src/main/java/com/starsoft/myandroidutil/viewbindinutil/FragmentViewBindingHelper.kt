@@ -28,8 +28,8 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 @Deprecated(
-        message = "Use LifecycleOwner.valueHolder(initialiseValue: () -> T) instead",
-        replaceWith = ReplaceWith("valueHolder(initialise)", "com.starsoft.myandroidutil.lifecicleutil.valueHolder")
+        message = "Use Fragment.viewLifeCycleValueHolder(initialiseValue: () -> T) instead",
+        replaceWith = ReplaceWith("viewLifeCycleValueHolder(initialise)", "com.starsoft.myandroidutil.lifecicleutil.viewLifeCycleValueHolder")
 )
 fun <T> Fragment.viewLifecycleLazy(initialise: () -> T): ReadOnlyProperty<Fragment, T> =
     object : ReadOnlyProperty<Fragment, T>, DefaultLifecycleObserver {
