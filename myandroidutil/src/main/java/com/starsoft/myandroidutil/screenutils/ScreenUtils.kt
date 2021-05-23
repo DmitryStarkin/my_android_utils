@@ -17,6 +17,7 @@
 package com.starsoft.myandroidutil.screenutils
 
 import android.graphics.Point
+import android.view.MotionEvent
 import android.view.View
 
 
@@ -31,8 +32,18 @@ fun View.isOver(view: View?): Boolean {
     val xCenter = tLoc[0] + this.measuredWidth / 2
     val yCenter = tLoc[1] + this.measuredHeight / 2
     return (xCenter > vLoc[0] && xCenter < vLoc[0] + view.measuredWidth) && (yCenter > vLoc[1] && yCenter < vLoc[1] + view.measuredHeight)
+}
 
-
+fun MotionEvent?.isTouchInside(view: View?): Boolean {
+    view ?: return false
+    this ?: return false
+    val vLoc = IntArray(2)
+    view.getLocationOnScreen(vLoc)
+    val touchX = this.x.toInt()
+    val touchY = this.y.toInt()
+    val xBound = vLoc[0] + view.measuredWidth
+    val yBound = vLoc[1] +  view.measuredHeight
+    return (touchX > vLoc[0] && touchX < xBound) && (touchY > vLoc[1] && touchY < yBound)
 }
 
 fun View.pointPositionOnScreen(): Point {
