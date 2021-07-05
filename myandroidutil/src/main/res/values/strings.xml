@@ -27,6 +27,11 @@
         <item>" second"</item>
     </string-array>
 
+    <string name="hour_mark">%1$sh</string>
+    <string name="day_mark">%1$sd</string>
+    <string name="minute_mark">%1$sm</string>
+    <string name="week_mark">%1$sw</string>
+
     <string name="ago">" ago."</string>
     <string name="zero_relative_string">0 seconds ago.</string>
     <string name="plural_suffix">s</string>

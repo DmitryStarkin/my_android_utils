@@ -18,6 +18,7 @@ import android.content.Context
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -27,9 +28,16 @@ import java.util.concurrent.TimeUnit
  */
 const val DAYS_IN_MONTH = 30L
 const val DAYS_IN_YEAR = 365L
+const val HOURS_IN_DAY = 24L
+const val HOURS_IN_WEEK = 168L
 const val ONE_UNIT = 1L
 const val TWO_UNIT = 2L
 const val ZERO_DAYS = 0
+
+private const val TODAY_DATE_FORMAT = "yyyy-MM-dd"
+private val todayDataFormatter: DateFormat by lazy {
+    SimpleDateFormat(TODAY_DATE_FORMAT, Locale.US)
+}
 
 val timeIntervalsMills = listOf(
     TimeUnit.DAYS.toMillis(DAYS_IN_YEAR),
@@ -84,3 +92,28 @@ fun Context.getDateStamp(date: Date, anchor: Long, formatter: DateFormat): Strin
         }
     }
 }
+
+fun Context.getRelativeTimeStamp(timeIntervalMills: Long): String {
+    val timeIntervalHour = timeIntervalMills / timeIntervalsMills[3]
+    return when {
+        timeIntervalHour < ONE_UNIT -> {
+            resources.getString(R.string.minute_mark, (timeIntervalMills / timeIntervalsMills[4]).toString())
+        }
+        timeIntervalHour < HOURS_IN_DAY -> {
+            resources.getString(R.string.hour_mark, (timeIntervalMills / timeIntervalsMills[3]).toString())
+        }
+        timeIntervalHour < HOURS_IN_WEEK -> {
+            resources.getString(R.string.day_mark, (timeIntervalMills / timeIntervalsMills[2]).toString())
+        }
+        else -> {
+            resources.getString(R.string.week_mark, ((timeIntervalMills / timeIntervalsMills[3])/HOURS_IN_WEEK).toString())
+        }
+    }
+}
+
+/**
+ * returns today's date at 23: 59
+ */
+
+fun getTodayDate(): Date = Date((todayDataFormatter.format(Date()).getDate(todayDataFormatter)?.time ?: Date().time)
+        + timeIntervalsMills[2] - timeIntervalsMills[5])

@@ -55,8 +55,10 @@ fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
 
 @JvmOverloads
 fun View.changeVisibilityWithAnimation(visibility: VisibilityState, transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
-    this.animation(transition, listener, duration)
-    this.visibility = visibility.state
+    if(this.visibility != visibility.state) {
+        this.animation(transition, listener, duration)
+        this.visibility = visibility.state
+    }
 }
 
 enum class VisibilityState(val state: Int) {
