@@ -22,21 +22,45 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.LocaleList
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.style.StyleSpan
 import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
 import androidx.core.text.toSpannable
 import com.starsoft.myandroidutil.providers.mainContext
 import java.util.*
-
+import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 // This File Created at 25.11.2020 13:33.
-const val EMPTY_STRING =""
+const val EMPTY_STRING = ""
+const val SPACE = " "
 private val COMMON_LOCALE = Locale.US
+val BOLD_SPAN = StyleSpan(Typeface.BOLD)
 
 fun String.insertTo(position: Int, string: CharSequence): CharSequence{
 
     return StringBuilder(this).insert(position, string) as CharSequence
+}
+
+fun String.boldMatches(regexString: String): Spannable =
+    this.applyStyleSpanToMatches(regexString, BOLD_SPAN)
+
+fun String.applyStyleSpanToMatches(regexString: String, span: StyleSpan): Spannable {
+    val result = SpannableString.valueOf(this)
+    if(regexString.isEmpty()) return result
+    val pattern = try{
+        Pattern.compile(regexString)
+    } catch (e: PatternSyntaxException){
+        return result
+    }
+    val matcher = pattern.matcher(result)
+    while (matcher.find()) {
+        val start = matcher.start()
+        val end = matcher.end()
+        result.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+    return result
 }
 
 fun CharSequence.getFirstSafety(): Char =

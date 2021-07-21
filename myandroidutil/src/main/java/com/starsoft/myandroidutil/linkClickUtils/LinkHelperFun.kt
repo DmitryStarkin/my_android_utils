@@ -11,8 +11,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+@file:JvmName("LinkClickUtils")
 
-package com.starsoft.myandroidutil.linnkClickUtils
+package com.starsoft.myandroidutil.linkClickUtils
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -25,17 +26,16 @@ import android.text.style.URLSpan
 import android.text.util.Linkify
 import android.view.MotionEvent
 import android.widget.TextView
-import com.starsoft.myandroidutil.R
+import com.starsoft.myandroidutil.stringext.EMPTY_STRING
+import com.starsoft.myandroidutil.stringext.LINK_PREFIX
+import com.starsoft.myandroidutil.stringext.WEB_PROTOCOL_REGEX_STRING
 import java.util.regex.Pattern
-
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 13:35.
  */
 
-const val  EMPTY_STRING = ""
-
-abstract class TextViewLinkHandler : LinkMovementMethod() {
+abstract class TextViewLinkHandler(private val dispatchTouch: Boolean = true) : LinkMovementMethod() {
     override fun onTouchEvent(widget: TextView, buffer: Spannable, event: MotionEvent): Boolean {
         if (event.action != MotionEvent.ACTION_UP) return super.onTouchEvent(widget, buffer, event)
         var x = event.x.toInt()
@@ -51,9 +51,24 @@ abstract class TextViewLinkHandler : LinkMovementMethod() {
             onLinkClick(link[0].url)
             return true
         }
-        return false
+        return !dispatchTouch
     }
     abstract fun onLinkClick(link: String)
+}
+
+class ExternalLinkHandler(dispatchTouch: Boolean = false, private val action: (String) -> Unit) : TextViewLinkHandler(dispatchTouch) {
+    override fun onLinkClick(link: String) {
+        action(link)
+    }
+}
+
+class LinkHandlerStub(
+    dispatchTouch: Boolean = false
+) : TextViewLinkHandler(dispatchTouch) {
+
+    override fun onLinkClick(link: String) {
+//        Stub
+    }
 }
 
 fun TextView.highlightLinks(pattern: Pattern) {
@@ -61,7 +76,7 @@ fun TextView.highlightLinks(pattern: Pattern) {
 }
 
 fun String.extractProtocol(): String {
-    return Regex(WEB_PROTOCOL_REGEX_STRING).find(this)?.value ?: ""
+    return Regex(WEB_PROTOCOL_REGEX_STRING).find(this)?.value ?: EMPTY_STRING
 }
 
 fun Context.openWebLink(link: String, choicerMessage: String = EMPTY_STRING) {

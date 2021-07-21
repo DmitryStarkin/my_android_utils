@@ -18,13 +18,17 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.IBinder
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.starsoft.myandroidutil.stringext.BOLD_SPAN
+import com.starsoft.myandroidutil.stringext.applyStyleSpanToMatches
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 14:01.
@@ -96,4 +100,12 @@ fun pixelsToSp(context: Context, px: Float): Float {
     val scaledDensity =
         context.resources.displayMetrics.scaledDensity
     return px / scaledDensity
+}
+
+fun TextView.boldMatches(regexString: String) {
+    this.applyStyleSpanToMatches(regexString, BOLD_SPAN)
+}
+
+fun TextView.applyStyleSpanToMatches(regexString: String, span: StyleSpan){
+    this.text = this.text.toString().applyStyleSpanToMatches(regexString, span)
 }
