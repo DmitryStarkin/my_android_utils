@@ -38,7 +38,7 @@ import java.util.*
 private const val FILE_EXTENSIONS = ".txt"
 private const val FILE_NAME = "Log"
 private const val SEND_FILE_NAME = "LogToSend.txt"
-private val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
+private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
 private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 
 fun Context.getLogFile(): File {
