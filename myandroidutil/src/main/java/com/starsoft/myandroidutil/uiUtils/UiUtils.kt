@@ -89,6 +89,24 @@ fun View.isKeyboardVisible(): Boolean =
 
 fun View.isKeyboardClosed(): Boolean = !this.isKeyboardVisible()
 
+fun View.getKeyboardHeight(): Int =
+    ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
+
+fun View.requestApplyInsetsWhenAttached() {
+    if (isAttachedToWindow) {
+        requestApplyInsets()
+    } else {
+        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                v.removeOnAttachStateChangeListener(this)
+                v.requestApplyInsets()
+            }
+
+            override fun onViewDetachedFromWindow(v: View) = Unit
+        })
+    }
+}
+
 fun convertDpToPixel(dp: Float, context: Context): Int {
     val resources = context.resources
     val metrics = resources.displayMetrics
