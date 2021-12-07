@@ -30,13 +30,13 @@ import kotlin.concurrent.withLock
 object LogWriter {
     private val executor = newSingleThreadPool()
     private val lock = ReentrantLock()
-    private val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
+    private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
     var blockLog = false
 
     init {
         writeToLog(
             "Start lodging \r\n" +
-                    "SDK version" + Build.VERSION.SDK_INT.toString() + "\r\n" +
+                    "SDK version " + Build.VERSION.SDK_INT.toString() + "\r\n" +
                     "Software version: " + Build.VERSION.RELEASE.toString() + "\r\n" +
                     "Build version: " + Build.VERSION.INCREMENTAL.toString() + "\r\n" +
                     "Device " + Build.DEVICE + "\r\n" +
