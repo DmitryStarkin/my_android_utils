@@ -32,8 +32,8 @@ android {
         return stdout.toString().trim()
     }
 
-    def appVersionCode = 29
-    def appVersionName = "0.6.0b" + "_" + getGitHash()
+    def appVersionCode = 30
+    def appVersionName = "0.7.0b" + "_" + getGitHash()
 
     defaultConfig {
         minSdkVersion 21
@@ -60,7 +60,6 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.core:core-ktx:1.8.0-alpha01'
     implementation 'androidx.appcompat:appcompat:1.4.0'
