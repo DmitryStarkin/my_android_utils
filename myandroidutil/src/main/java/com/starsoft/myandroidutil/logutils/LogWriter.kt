@@ -15,6 +15,8 @@
 package com.starsoft.myandroidutil.logutils
 
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.simpleandroidasynclibrary.core.launch
 import com.starsoft.simpleandroidasynclibrary.executors.newSingleThreadPool
@@ -31,31 +33,52 @@ object LogWriter {
     private val executor = newSingleThreadPool()
     private val lock = ReentrantLock()
     private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
+    private const val WRITER_CLOSE_DELAY = 1000L
     var blockLog = false
+
+    private val mHandler = Handler(Looper.getMainLooper())
+
+    private var writer: FileWriter? = null
+
+    private val CAPTION = "Start lodging \r\n" +
+            "SDK version " + Build.VERSION.SDK_INT.toString() + "\r\n" +
+            "Software version: " + Build.VERSION.RELEASE.toString() + "\r\n" +
+            "Build version: " + Build.VERSION.INCREMENTAL.toString() + "\r\n" +
+            "Device " + Build.DEVICE + "\r\n" +
+            "Model " + Build.MODEL + "\r\n" +
+            "Product " + Build.PRODUCT + "\r\n" +
+            "\r\n"
 
     init {
         writeToLog(
-            "Start lodging \r\n" +
-                    "SDK version " + Build.VERSION.SDK_INT.toString() + "\r\n" +
-                    "Software version: " + Build.VERSION.RELEASE.toString() + "\r\n" +
-                    "Build version: " + Build.VERSION.INCREMENTAL.toString() + "\r\n" +
-                    "Device " + Build.DEVICE + "\r\n" +
-                    "Model " + Build.MODEL + "\r\n" +
-                    "Product " + Build.PRODUCT + "\r\n" +
-                    "\r\n"
+            CAPTION
         )
     }
 
     private fun writeToLog(msg: String) {
-
-        var writer: FileWriter? = null
-        try {
-            writer = FileWriter(ContextProvider.context.generateLogFile(), true)
+        mHandler.removeCallbacksAndMessages(null)
+        fun write(writer: FileWriter) {
             val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
             writer.write("## $time $msg ##\r\n")
-        } finally {
-            writer?.close()
         }
+        try {
+            writer?.apply {
+                write(this)
+            } ?: run {
+                writer = FileWriter(ContextProvider.context.generateLogFile(), true).apply {
+                    write(this)
+                }
+            }
+        } finally {
+            mHandler.postDelayed({
+                writer?.close()
+                writer = null
+            }, WRITER_CLOSE_DELAY)
+        }
+    }
+
+    fun reWriteCaption() {
+        writeLogMessage(CAPTION)
     }
 
     fun writeLogMessage(
@@ -76,6 +99,9 @@ object LogWriter {
     }
 
     fun reset() {
+        mHandler.removeCallbacksAndMessages(null)
+        writer?.close()
+        writer = null
         executor.purge()
     }
 }

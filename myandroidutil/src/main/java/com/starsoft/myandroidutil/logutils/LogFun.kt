@@ -76,10 +76,18 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
                 FileSaver.saveFromInputStream(
                     FileInputStream(file), SEND_FILE_NAME, DIRECTORY.CACH_LOGS,
                     onSusses = { f ->
+                        if(file.delete()){
                         LogWriter.blockLog = false
+                        LogWriter.reWriteCaption()
+                        } else{
+                            LogWriter.blockLog = false
+                        }
                         sendFileToEmail(eMails, f)
+//                        TODO need best solution
+                        f.deleteOnExit()
                     }, onError = { e ->
                         LogWriter.blockLog = false
+                        LogWriter.writeLogMessage("Log send error $e")
                         e.printStackTrace()
                     })})
     }
