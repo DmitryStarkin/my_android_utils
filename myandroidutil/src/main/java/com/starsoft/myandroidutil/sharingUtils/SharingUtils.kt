@@ -111,10 +111,10 @@ fun Context.getTempImageFile(
          * this is blocking call
          */
 @WorkerThread
-fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String): File {
+fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix: String): File {
     return File.createTempFile(
             filePrefix,
-            System.currentTimeMillis().toString(),
+            System.currentTimeMillis().toString() + fileSuffix,
             this@getTemporaryFileFromUri.getMyCacheDir(DIRECTORY.CACHE_FILES)
         ).also { file ->
             FileOutputStream(file).use { out ->
