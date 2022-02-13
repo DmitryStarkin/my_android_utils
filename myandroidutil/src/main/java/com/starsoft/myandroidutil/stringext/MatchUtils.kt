@@ -107,3 +107,22 @@ fun String?.isHexColorString(): Boolean {
     if (this == null || this.isEmpty()) return false
     return this.matches(Regex(HEX_COLOR_REGEX_STRING)) || this.matches(Regex(HEX_COLOR_WITCH_ALPHA_REGEX_STRING))
 }
+
+fun String?.isHashTagLink(): Boolean {
+    if (this == null || this.isEmpty()) return false
+    return this.matches(Regex(HASH_TAG_REGEX_STRING))
+}
+
+fun String?.isMentionsLink(): Boolean {
+    if (this == null || this.isEmpty()) return false
+    return this.matches(Regex(MENTIONS_REGEX_STRING))
+}
+
+fun String?.isWebLink(): Boolean {
+    if (this == null || this.isEmpty()) return false
+    return this.matches(Regex(WEB_LINK_REGEX_STRING))
+}
+
+fun String.extractMentionsData(): String {
+    return this.replaceFirst(MENTIONS_TAG_PREFIX, "")
+}

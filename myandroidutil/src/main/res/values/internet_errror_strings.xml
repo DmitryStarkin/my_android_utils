@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2022. Dmitry Starkin Contacts: t0506803080@gmail.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the «License»);
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~  //www.apache.org/licenses/LICENSE-2.0
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an «AS IS» BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+    <string name="error">"Error "</string>
+    <string name="unknown">unknown</string>
+    <string name="code_400">400 Bad Request</string>
+    <string name="code_401">401 Unauthorized</string>
+    <string name="code_402">402 Payment Required</string>
+    <string name="code_403">403 Forbidden</string>
+    <string name="code_404">404 Not Found</string>
+    <string name="code_405">405 Method Not Allowed</string>
+    <string name="code_406">406 Not Acceptable</string>
+    <string name="code_407">407 Proxy Authentication Required</string>
+    <string name="code_408">408 Request Timeout</string>
+    <string name="code_409">409 Conflict</string>
+    <string name="code_410">410 Gone</string>
+    <string name="code_411">411 Length Required</string>
+    <string name="code_413">413 Payload Too Large</string>
+    <string name="code_414">414 URI Too Long</string>
+    <string name="code_415">415 Unsupported Media Type</string>
+    <string name="code_416">416 Range Not Satisfiable</string>
+    <string name="code_417">417 Expectation Failed</string>
+    <string name="code_418">418 I’m a teapot</string>
+    <string name="code_419">419 Authentication Timeout</string>
+    <string name="code_421">421 Misdirected Request</string>
+    <string name="code_422">422 Unprocessable Entity</string>
+    <string name="code_423">423 Locked</string>
+    <string name="code_424">424 Failed Dependency</string>
+    <string name="code_425">425 Too Early</string>
+    <string name="code_426">426 Upgrade Required</string>
+    <string name="code_428">428 Precondition Required</string>
+    <string name="code_429">429 Too Many Requests</string>
+    <string name="code_431">431 Request Header Fields Too Large</string>
+    <string name="code_449">449 Retry With</string>
+    <string name="code_451">451 Unavailable For Legal Reasons</string>
+    <string name="code_499">499 Client Closed Request</string>
+    <string name="code_500">500 Internal Server Error</string>
+    <string name="code_501">501 Not Implemented</string>
+    <string name="code_502">502 Bad Gateway</string>
+    <string name="code_503">503 Service Unavailabled</string>
+    <string name="code_504">504 Gateway Timeout</string>
+    <string name="code_505">505 HTTP Version Not Supported</string>
+    <string name="code_506">506 Variant Also Negotiates</string>
+    <string name="code_507">507 Insufficient Storage</string>
+    <string name="code_508">508 Loop Detected</string>
+    <string name="code_509">509 Bandwidth Limit Exceeded</string>
+    <string name="code_510">510 Not Extended</string>
+    <string name="code_511">511 Network Authentication Required"</string>
+    <string name="code_520">520 Unknown server Error</string>
+    <string name="code_521">521 Web Server Is Down</string>
+    <string name="code_522">522 Connection Timed Out</string>
+    <string name="code_523">523 Origin Is Unreachable</string>
+    <string name="code_524">524 A Timeout Occurred</string>
+    <string name="code_525">525 SSL Handshake Failed</string>
+    <string name="code_526">526 Invalid SSL Certificate</string>
+</resources>

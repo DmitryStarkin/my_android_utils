@@ -14,13 +14,14 @@
 
 package com.starsoft.myandroidutil.providers
 
+import android.annotation.SuppressLint
 import android.content.Context
 
 
 // This File Created at 25.11.2020 10:35.
 
 
-
+@SuppressLint("StaticFieldLeak")
 class ContextProvider(_context: Context) {
 
     companion object {

@@ -28,6 +28,8 @@ import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
 import androidx.core.text.toSpannable
 import com.starsoft.myandroidutil.providers.mainContext
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.*
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
@@ -106,3 +108,27 @@ private fun getFromResources(locale: Locale, id: Int): String {
     val tempContext = mainContext.createConfigurationContext(config)
     return tempContext.getString(id)
 }
+
+fun Int?.toThousandMarkString(firstThousandMark: String = EMPTY_STRING,
+                              secondThousandMark: String = EMPTY_STRING,
+                              millionMark: String = EMPTY_STRING
+): String =
+    this?.let {
+        when {
+            it < 0 -> {
+                EMPTY_STRING
+            }
+            it < 1000 -> {
+                it.toString()
+            }
+            it < 100000 -> {
+                DecimalFormat("#.##").apply { roundingMode = RoundingMode.FLOOR }.format(it.toDouble() / 1000) + firstThousandMark
+            }
+            it < 1000000 -> {
+                (it / 1000).toString() + secondThousandMark
+            }
+            else -> {
+                DecimalFormat("#.##").apply { roundingMode = RoundingMode.FLOOR }.format(it.toDouble() / 1000000) + millionMark
+            }
+        }
+    } ?: EMPTY_STRING
