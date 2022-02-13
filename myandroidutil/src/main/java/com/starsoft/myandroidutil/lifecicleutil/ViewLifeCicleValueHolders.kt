@@ -49,7 +49,7 @@ fun <T> Fragment.viewLifeCycleValueHolder(initialiseValue: () -> T): ReadOnlyPro
 
             }
 
-            override fun finalize() {
+            override fun finalizeTask() {
                 value = null
             }
 
@@ -75,7 +75,7 @@ fun <T> Fragment.viewLifeCycleValueHolder(): ReadWriteProperty<Fragment, T> =
                         })
             }
 
-            override fun finalize() {
+            override fun finalizeTask() {
                 value = null
             }
 

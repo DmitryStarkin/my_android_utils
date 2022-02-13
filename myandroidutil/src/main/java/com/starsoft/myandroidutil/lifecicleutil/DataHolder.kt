@@ -36,7 +36,7 @@ fun <T> LifecycleOwner.valueHolder(initialiseValue: () -> T): ReadOnlyProperty<L
                 connectToLifecycle(this@valueHolder)
             }
 
-            override fun finalize() {
+            override fun finalizeTask() {
                 value = null
             }
 
