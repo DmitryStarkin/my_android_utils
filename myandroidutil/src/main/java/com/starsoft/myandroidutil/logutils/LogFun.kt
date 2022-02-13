@@ -42,7 +42,7 @@ private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
 private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 
 fun Context.getLogFile(): File {
-    return File(this.getMyCacheDir(DIRECTORY.CACH_LOGS), FILE_NAME + FILE_EXTENSIONS)
+    return File(this.getMyCacheDir(DIRECTORY.CACHE_LOGS), FILE_NAME + FILE_EXTENSIONS)
 }
 
 fun getLogFile(): File {
@@ -74,7 +74,7 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
             { LogWriter.blockLog = true
                 LogWriter.reset()
                 FileSaver.saveFromInputStream(
-                    FileInputStream(file), SEND_FILE_NAME, DIRECTORY.CACH_LOGS,
+                    FileInputStream(file), SEND_FILE_NAME, DIRECTORY.CACHE_LOGS,
                     onSusses = { f ->
                         if(file.delete()){
                         LogWriter.blockLog = false
