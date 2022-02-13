@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. Dmitry Starkin Contacts: t0506803080@gmail.com
+ * Copyright (c) 2022. Dmitry Starkin Contacts: t0506803080@gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the «License»);
  *  you may not use this file except in compliance with the License.
@@ -12,28 +12,12 @@
  *  limitations under the License.
  */
 
-package com.starsoft.myandroidutil.providers
-
-import android.annotation.SuppressLint
-import android.content.Context
+package com.starsoft.myandroidutil.navigationUtils.interfaces
 
 
-// This File Created at 25.11.2020 10:35.
-
-
-@SuppressLint("StaticFieldLeak")
-class ContextProvider(_context: Context) {
-
-    companion object {
-
-        lateinit var context: Context
-    }
-
-    init {
-        context = _context
-    }
-
-    fun getContext(): Context {
-        return context
-    }
+/**
+ * Created by Dmitry Starkin on 13.02.2022 18:56.
+ */
+interface Host {
+    fun getContainerId(): Int
 }

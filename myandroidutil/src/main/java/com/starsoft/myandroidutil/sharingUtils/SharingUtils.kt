@@ -19,6 +19,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.providers.ContextProvider
 import java.io.File
@@ -32,9 +33,9 @@ private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 const val  MME_TYPE_TEXT = "text/plain"
 
 enum class DIRECTORY(val directoryName: String) {
-    CACH_IMAGES("/images/"),
-    CACH_FILES("/files/"),
-    CACH_LOGS("/logs/"),
+    CACHE_IMAGES("/images/"),
+    CACHE_FILES("/files/"),
+    CACHE_LOGS("/logs/"),
     EXTERNAL_DOCUMENTS(ContextProvider.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString())
 }
 
@@ -83,6 +84,7 @@ fun Context.shareText(text: String, chooserMessage: String) {
         /**
          * this is blocking call
          */
+@WorkerThread
 fun Context.getTempImageFile(
     image: Bitmap?,
     format: Bitmap.CompressFormat,
@@ -94,7 +96,7 @@ fun Context.getTempImageFile(
     return File.createTempFile(
             filePrefix,
             System.currentTimeMillis().toString() + fileExtension,
-            this@getTempImageFile.getMyCacheDir(DIRECTORY.CACH_IMAGES)
+            this@getTempImageFile.getMyCacheDir(DIRECTORY.CACHE_IMAGES)
         ).also { file ->
             FileOutputStream(file).use { out ->
                 image?.compress(format, quality, out)
@@ -102,4 +104,24 @@ fun Context.getTempImageFile(
             }
             file.deleteOnExit()
         }
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+        /**
+         * this is blocking call
+         */
+@WorkerThread
+fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String): File {
+    return File.createTempFile(
+            filePrefix,
+            System.currentTimeMillis().toString(),
+            this@getTemporaryFileFromUri.getMyCacheDir(DIRECTORY.CACHE_FILES)
+        ).also { file ->
+            FileOutputStream(file).use { out ->
+                this@getTemporaryFileFromUri.contentResolver.openInputStream(source)?.copyTo(out)
+                out.flush()
+            }
+            file.deleteOnExit()
+        }
+
 }
