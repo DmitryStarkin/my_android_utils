@@ -39,6 +39,10 @@ const val EMPTY_STRING = ""
 const val SPACE = " "
 private val COMMON_LOCALE = Locale.US
 val BOLD_SPAN = StyleSpan(Typeface.BOLD)
+const val TH_ORDINAL = "th"
+const val RD_ORDINAL = "rd"
+const val ST_ORDINAL = "st"
+const val ND_ORDINAL = "nd"
 
 fun String.insertTo(position: Int, string: CharSequence): CharSequence{
 
@@ -132,3 +136,30 @@ fun Int?.toThousandMarkString(firstThousandMark: String = EMPTY_STRING,
             }
         }
     } ?: EMPTY_STRING
+
+fun Int.getOrdinal(): String =
+when (this % 100) {
+    11, 12, 14 -> {
+        TH_ORDINAL
+    }
+    else -> {
+        when (this % 10) {
+            1 -> {
+                ST_ORDINAL
+            }
+            2 -> {
+                ND_ORDINAL
+            }
+            3 -> {
+                RD_ORDINAL
+            }
+            else -> {
+                TH_ORDINAL
+
+            }
+        }
+    }
+}
+
+fun Int.toOrdinalString(): String =
+    "$this${this.getOrdinal()}"

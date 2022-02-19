@@ -16,15 +16,16 @@ package com.starsoft.myandroidutil.drawables.fillingDrawable.bitmapFactories
 
 import android.graphics.*
 import com.starsoft.myandroidutil.drawables.FillingBitmapFactory
+import com.starsoft.myandroidutil.drawables.Scale
 
 /**
  * Created by Dmitry Starkin on 07.02.2022 18:38.
  */
-class DotFillingBitmapFactory(
-    private val squareSize: Int = 10,
-    private val dotSize: Int = 40,
-    private val colorOdd: Int = -0x3d3d3e,
-    private val colorEven: Int = -0xc0c0d
+class DotFillingBitmapFactory @JvmOverloads constructor(
+    private val squareSize: Int = 40,
+    private val dotSize: Int = 5,
+    private val bgColor: Int = Color.WHITE,
+    private val dotColor: Int = Color.GRAY
 ) : FillingBitmapFactory {
 
     init {
@@ -33,7 +34,16 @@ class DotFillingBitmapFactory(
         }
     }
 
-    override fun createFillingBitmap(): Bitmap {
+    override fun createFillingBitmap(fillingArea: Rect, fitting: Boolean): Pair<Bitmap, Scale> {
+
+        val scale = if (fitting) {
+            val widthMultiple = (fillingArea.width() /  squareSize) * squareSize  + dotSize
+            val heightMultiple = (fillingArea.height() /  squareSize) * squareSize + dotSize
+            Scale(fillingArea.width().toFloat()/widthMultiple.toFloat(), fillingArea.height().toFloat()/heightMultiple.toFloat())
+        } else {
+            Scale()
+        }
+
         val bitmap = Bitmap.createBitmap(squareSize, squareSize, Bitmap.Config.ARGB_8888)
 
         val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -41,14 +51,11 @@ class DotFillingBitmapFactory(
 
         val canvas = Canvas(bitmap)
 
-        val rect = Rect(0, 0, squareSize, squareSize)
         val dotRect = RectF(0F, 0F, dotSize.toFloat(), dotSize.toFloat())
 
-        bitmapPaint.color = colorOdd
-        canvas.drawRect(rect, bitmapPaint)
-
-        bitmapPaint.color = colorEven
+        canvas.drawColor(bgColor)
+        bitmapPaint.color = dotColor
         canvas.drawOval(dotRect, bitmapPaint)
-        return bitmap
+        return Pair(bitmap, scale)
     }
 }

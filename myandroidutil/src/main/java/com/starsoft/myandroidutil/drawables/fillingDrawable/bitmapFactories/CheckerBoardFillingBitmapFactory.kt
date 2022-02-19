@@ -16,18 +16,28 @@ package com.starsoft.myandroidutil.drawables.fillingDrawable.bitmapFactories
 
 import android.graphics.*
 import com.starsoft.myandroidutil.drawables.FillingBitmapFactory
-
+import com.starsoft.myandroidutil.drawables.Scale
 
 /**
  * Created by Dmitry Starkin on 07.02.2022 18:44.
  */
-class CheckerBoardFillingBitmapFactory(
+class CheckerBoardFillingBitmapFactory @JvmOverloads constructor(
     private val size: Int = 40,
-    private val colorOdd: Int = -0x3d3d3e,
-    private val colorEven: Int = -0xc0c0d
+    private val colorOdd: Int = Color.WHITE,
+    private val colorEven: Int = Color.GRAY
 ) : FillingBitmapFactory {
 
-    override fun createFillingBitmap(): Bitmap {
+    override fun createFillingBitmap(fillingArea: Rect, fitting: Boolean): Pair<Bitmap, Scale> {
+
+        val scale = if (fitting) {
+            val widthMultiple = (fillingArea.width() / size) * size
+            val heightMultiple = (fillingArea.height() / size) * size
+            Scale(fillingArea.width().toFloat()/widthMultiple.toFloat(),
+                fillingArea.height().toFloat()/heightMultiple.toFloat())
+        } else {
+            Scale()
+        }
+
         val bitmap = Bitmap.createBitmap(size * 2, size * 2, Bitmap.Config.ARGB_8888)
 
         val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -48,6 +58,6 @@ class CheckerBoardFillingBitmapFactory(
 
         rect.offset(size, -size)
         canvas.drawRect(rect, bitmapPaint)
-        return bitmap
+        return Pair(bitmap, scale)
     }
 }
