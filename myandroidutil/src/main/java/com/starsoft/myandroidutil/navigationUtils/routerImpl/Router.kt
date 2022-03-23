@@ -239,21 +239,21 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
     private fun moveToFragment(rout: Rout, data: Bundle?): Entry? {
         if (data.getReplaceFlag(config.defaultReplaceBehavior)) {
             val fragment = rout.destination.newInstance() as Fragment
-            if (showAsDialog(fragment, rout.destination.javaClass.name) || host.getContainerId() == View.NO_ID) return null
+            if (showAsDialog(fragment, rout.destination.name) || host.getContainerId() == View.NO_ID) return null
             switchFragment(fragment.apply {
                 arguments = data
-            }, rout.destination.javaClass.name)
+            }, rout.destination.name)
             return Entry(rout, data)
         }
-        manager.findFragmentByTag(rout.destination.javaClass.name)?.also {
+        manager.findFragmentByTag(rout.destination.name)?.also {
             it.arguments = data
             showFragment(it)
         } ?: run {
             val fragment = rout.destination.newInstance() as Fragment
-            if (showAsDialog(fragment, rout.destination.javaClass.name) || host.getContainerId() == View.NO_ID) return null
+            if (showAsDialog(fragment, rout.destination.name) || host.getContainerId() == View.NO_ID) return null
             setFragment(
                 fragment.apply { arguments = data },
-                rout.destination.javaClass.name
+                rout.destination.name
             )
         }
         return Entry(rout, data)

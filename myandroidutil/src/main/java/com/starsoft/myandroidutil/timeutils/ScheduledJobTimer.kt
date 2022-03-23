@@ -44,6 +44,8 @@ class ScheduledJobTimer : Handler(Looper.getMainLooper()) {
         })
     }
 
+    fun hasJob(tag: Int): Boolean = hasMessages(tag)
+
     fun cancelScheduledJob(tag: Int) {
         removeMessages(tag)
     }
