@@ -48,12 +48,14 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
     open val myRouts: List<Rout> = emptyList()
 
     companion object {
-        private const val REPLACE_FLAG_KEY = "replaceOrFinish"
-        private const val BACK_STACK_FLAG_KEY = "addToBackStack"
-        private const val IGNORE_ROUT_POLICY_FLAG_KEY = "ignoreRoutPolicy"
-        private const val ENTER_ANIMATION_KEY = "routerEnterAnimation"
-        private const val EXIT_ANIMATION_KEY = "routerExitAnimation"
-        private const val TRANSITION_KEY = "routerTransition"
+        private const val REPLACE_FLAG_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.replaceOrFinish"
+        private const val BACK_STACK_FLAG_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.addToBackStack"
+        private const val IGNORE_ROUT_POLICY_FLAG_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.ignoreRoutPolicy"
+        private const val ENTER_ANIMATION_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.routerEnterAnimation"
+        private const val EXIT_ANIMATION_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.routerExitAnimation"
+        private const val TRANSITION_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.routerTransition"
+        private const val ALWAYS_HIDE_FLAG = "com.starsoft.myandroidutil.navigationUtils.routerImpl.alwaysHide"
+        private const val ALWAYS_REMOVE_FLAG = "com.starsoft.myandroidutil.navigationUtils.routerImpl.alwaysRemove"
 
         fun Bundle?.addReplaceFlag(replaceBehavior: ReplaceBehavior): Bundle =
             this?.let {
@@ -65,6 +67,28 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
             bundleOf(
                 REPLACE_FLAG_KEY to this.behavior
             )
+
+        fun alwaysHideFlag(): Bundle =
+            bundleOf(
+                ALWAYS_HIDE_FLAG to true
+            )
+
+        fun Bundle?.addAlwaysHideFlag(): Bundle =
+            this?.let {
+                it.putBoolean(ALWAYS_HIDE_FLAG, true)
+                it
+            } ?: alwaysHideFlag()
+
+        fun alwaysRemoveFlag(): Bundle =
+            bundleOf(
+                ALWAYS_REMOVE_FLAG to true
+            )
+
+        fun Bundle?.addAlwaysRemoveFlag(): Bundle =
+            this?.let {
+                it.putBoolean(ALWAYS_REMOVE_FLAG, true)
+                it
+            } ?: alwaysHideFlag()
 
         fun Bundle?.addBackStackBehavior(backstackBehavior: BackstackBehavior): Bundle =
             this?.let {
@@ -131,6 +155,12 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
 
         private fun Bundle?.getReplaceFlag(defValue: ReplaceBehavior): Boolean =
             this?.getBoolean(REPLACE_FLAG_KEY, defValue.behavior) ?: defValue.behavior
+
+        private fun Bundle?.getAlwaysHideFlag(): Boolean =
+            this?.getBoolean(ALWAYS_HIDE_FLAG, false) ?: false
+
+        private fun Bundle?.getAlwaysRemoveFlag(): Boolean =
+            this?.getBoolean(ALWAYS_REMOVE_FLAG, false) ?: false
 
         private fun Bundle?.getBackStackFlag(defValue: BackstackBehavior): Boolean =
             this?.getBoolean(BACK_STACK_FLAG_KEY, defValue.behavior) ?: defValue.behavior
@@ -261,9 +291,9 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
 
     private fun switchFragment(fragment: Fragment, tag: String) {
         manager.beginTransaction()
-            .setAnimations(fragment.arguments)
-            .replace(host.getContainerId(), fragment, tag)
-        .commit()
+            .removeFragments(tag)
+            .addOrShow(fragment, tag)
+            .commit()
     }
 
     private fun setFragment(fragment: Fragment, tag: String) {
@@ -299,15 +329,6 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
             false
         }
 
-    private fun hideAll() {
-        val transaction = manager.beginTransaction()
-        manager.fragments.forEach {
-            transaction.hide(it)
-        }
-        transaction.commit()
-    }
-
-
     private fun FragmentManager.getAllFragments(exclude: List<Fragment>): List<Fragment> =
         this.fragments.mapNotNull {
             if (it !in exclude) {
@@ -316,6 +337,33 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                 null
             }
         }
+
+    private fun FragmentTransaction.addOrShow(fragment: Fragment, tag: String): FragmentTransaction {
+        manager.findFragmentByTag(tag)?.let {
+            it.arguments = fragment.arguments
+            setAnimations(fragment.arguments)
+            show(it)
+        } ?: run{
+            setAnimations(fragment.arguments)
+            add(host.getContainerId(), fragment, tag)
+        }
+        return this
+    }
+
+    private fun FragmentTransaction.removeFragments(tag: String): FragmentTransaction {
+        manager.getAllFragments(emptyList()).forEach {
+            if(it.arguments.getAlwaysHideFlag()){
+                if(it.tag != tag){
+                    this.hide(it)
+                }
+            } else {
+                if(it.tag != tag || it.arguments.getAlwaysRemoveFlag()) {
+                    this.remove(it)
+                }
+            }
+        }
+        return this
+    }
 
     private fun FragmentTransaction.hideAllFragments(exclude: List<Fragment>): FragmentTransaction {
         manager.getAllFragments(exclude).forEach {
