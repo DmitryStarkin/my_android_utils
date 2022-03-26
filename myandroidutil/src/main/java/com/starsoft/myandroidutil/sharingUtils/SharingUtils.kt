@@ -17,20 +17,36 @@ package com.starsoft.myandroidutil.sharingUtils
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import android.provider.OpenableColumns
+import android.util.Base64
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.providers.ContextProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-
+import java.io.OutputStream
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 13:05.
  */
 private val APPLICATION_ID = ContextProvider.context.packageName.toString()
 const val  MME_TYPE_TEXT = "text/plain"
+const val MME_TYPE_IMAGE_JPG = "image/jpg"
+private const val URI_SCHEME_FILE ="file"
+private const val EXTENSION_JPEG = ".jpeg"
+private const val FULL_QUALITY = 100
+private val DEFAULT_IMAGE_FORMAT = Bitmap.CompressFormat.JPEG
+private const val START_QUALITY = 80
+private const val QUALITY_STEP = 40
+private const val ACCURACY_PRESENT = 5
+private const val BASE64_LEN_COEFFICIENT = 0.75f
 
 enum class DIRECTORY(val directoryName: String) {
     CACHE_IMAGES("/images/"),
@@ -81,9 +97,6 @@ fun Context.shareText(text: String, chooserMessage: String) {
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
-        /**
-         * this is blocking call
-         */
 @WorkerThread
 fun Context.getTempImageFile(
     image: Bitmap?,
@@ -107,9 +120,6 @@ fun Context.getTempImageFile(
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
-        /**
-         * this is blocking call
-         */
 @WorkerThread
 fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix: String): File {
     return File.createTempFile(
@@ -125,3 +135,180 @@ fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix:
         }
 
 }
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun Context.getCompressedFile(image: Bitmap?, quality: Int, filePrefix: String): File {
+    return this.getTempImageFile(image, Bitmap.CompressFormat.JPEG, quality, filePrefix, EXTENSION_JPEG)
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun OutputStream.writeImage(image: Bitmap, format: Bitmap.CompressFormat = DEFAULT_IMAGE_FORMAT,
+                                    quality: Int = FULL_QUALITY){
+        this@writeImage.use { out ->
+            image.compress(format, quality, out)
+            out.flush()
+        }
+}
+
+@WorkerThread
+fun Context.getFileDataFromUri(uri: Uri): FileData? {
+    return this@getFileDataFromUri.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+            cursor.moveToFirst()
+            FileData(cursor.getString(nameIndex), cursor.getLong(sizeIndex))
+        }
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun Context.getBitmap(uri: Uri): Bitmap? {
+    return this@getBitmap.contentResolver.openInputStream(uri)?.let {
+            it.use { stream ->
+                BitmapFactory.decodeStream(stream)
+            }
+        }
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun Context.getBitmapFromBase64(source: String): Bitmap? {
+    return  Base64.decode(source, Base64.DEFAULT)?.let {
+            it.inputStream().use { stream ->
+                BitmapFactory.decodeStream(stream)
+            }
+    }
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun Context.getTempFileFromBase64(
+    source: String,
+    filePrefix: String,
+    fileExtension: String
+): File {
+        val bytes = Base64.decode(source, Base64.DEFAULT)
+        return File.createTempFile(
+            filePrefix,
+            System.currentTimeMillis().toString() + fileExtension,
+            this@getTempFileFromBase64.getMyCacheDir(DIRECTORY.CACHE_IMAGES)
+        ).also { file ->
+            FileOutputStream(file).use { out ->
+                out.write(bytes)
+                out.flush()
+            }
+            file.deleteOnExit()
+        }
+}
+
+@WorkerThread
+private fun Context.checkAndReduceQuality(image: Bitmap?, maxSize: Long,
+                                          filePrefix: String,
+                                          resultQuality: Int = START_QUALITY,
+                                          qualityStep: Int = QUALITY_STEP,
+                                          topBound: Int = FULL_QUALITY,
+                                          bottomBound: Int = 0,
+                                          flag: Boolean = false): Pair<Int, File> {
+    if(resultQuality == FULL_QUALITY || image == null) return Pair(FULL_QUALITY, getCompressedFile(image, resultQuality, filePrefix))
+    val compressedFile = getCompressedFile(image, resultQuality, filePrefix)
+    val compressed = compressedFile.length()
+    return if ((compressed - (maxSize / 100) * ACCURACY_PRESENT) > maxSize && qualityStep > 0) {
+        val stepped =  if (flag) {
+            qualityStep / 2
+        } else {
+            qualityStep
+        }.getSteppedDown(resultQuality, bottomBound)
+        checkAndReduceQuality(image, maxSize, filePrefix, stepped.first, stepped.second, resultQuality, bottomBound, false)
+    } else if ((maxSize - compressed) > ((maxSize / 100) * ACCURACY_PRESENT) && qualityStep > 0) {
+        val stepped = if (!flag) {
+            qualityStep / 2
+        } else {
+            qualityStep
+        }.getSteppedUp(resultQuality, topBound)
+        checkAndReduceQuality(image, maxSize, filePrefix, stepped.first, stepped.second,  topBound, resultQuality, true)
+    } else {
+        Pair(resultQuality, compressedFile)
+    }
+
+}
+
+private fun Int.getSteppedDown(quality: Int, bottomBound: Int = 0): Pair<Int, Int> =
+    if ((quality - this) > bottomBound) {
+        Pair(maxOf(quality - this, quality/2), this)
+    } else {
+        (this / 2).getSteppedDown(quality, bottomBound)
+    }
+
+
+private fun Int.getSteppedUp(quality: Int, topBound: Int = FULL_QUALITY): Pair<Int, Int> =
+    if ((quality + this) < topBound) {
+        Pair(quality + this, this)
+    } else {
+        (this / 2).getSteppedUp(quality, topBound)
+    }
+
+@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun Context.getTemporaryImageFromUri(source: Uri, filePrefix: String): File {
+    return File.createTempFile(
+            filePrefix,
+            System.currentTimeMillis().toString(),
+            this@getTemporaryImageFromUri.getMyCacheDir(DIRECTORY.CACHE_IMAGES)
+        ).also { file ->
+            FileOutputStream(file).use { out ->
+                this@getTemporaryImageFromUri.contentResolver.openInputStream(source)?.copyTo(out)
+                out.flush()
+            }
+            file.deleteOnExit()
+        }
+}
+
+@WorkerThread
+fun Context.getTempImageFileFromUri(uri: Uri, maxSize: Long, filePrefix: String): File {
+    return if ((getFileDataFromUri(uri)?.length ?: 0) < maxSize) {
+        this.getTemporaryImageFromUri(uri, filePrefix)
+    } else {
+        val bitmap = getBitmap(uri)
+        checkAndReduceQuality(bitmap, maxSize, filePrefix).second
+    }
+}
+
+@WorkerThread
+fun Context.getTempImageFileFromBase64(source: String, maxSize: Long, filePrefix: String, fileSuffix: String): File {
+    return if (source.getFileSizeFromBase64() < maxSize) {
+        this.getTempFileFromBase64(source, filePrefix, fileSuffix)
+    } else {
+        val bitmap = getBitmapFromBase64(source)
+        checkAndReduceQuality(bitmap, maxSize, filePrefix).second
+    }
+}
+
+/**
+ * use it only if you have rights to  the file from URI
+ */
+
+fun Uri?.getFile(): File? =
+    this?.path?.let{
+        if(it.isNotEmpty() && this.scheme == URI_SCHEME_FILE){
+            File(it)
+        } else {
+            null
+        }
+    }
+
+
+fun String?.getFileSizeFromBase64(): Long = ((this?.length?.toFloat() ?: 0f) * BASE64_LEN_COEFFICIENT).toLong()
+
+class SaveJpgImage: ActivityResultContracts.CreateDocument(){
+    override fun createIntent(context: Context, input: String): Intent {
+        super.createIntent(context, input)
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .setType(MME_TYPE_IMAGE_JPG)
+            .putExtra(Intent.EXTRA_TITLE, input)
+    }
+}
+
+data class FileData(val name: String, val length: Long)
