@@ -26,6 +26,7 @@ import android.text.style.URLSpan
 import android.text.util.Linkify
 import android.view.MotionEvent
 import android.widget.TextView
+import com.starsoft.myandroidutil.linkClickUtils.TextViewLinkHandler.DispatchNoLinkTouchBehavior.*
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import com.starsoft.myandroidutil.stringext.LINK_PREFIX
 import com.starsoft.myandroidutil.stringext.WEB_PROTOCOL_REGEX_STRING
@@ -35,9 +36,9 @@ import java.util.regex.Pattern
  * Created by Dmitry Starkin on 08.05.2021 13:35.
  */
 
-abstract class TextViewLinkHandler(private val dispatchTouch: Boolean = true) : LinkMovementMethod() {
+abstract class TextViewLinkHandler(private val consumeTouch: DispatchNoLinkTouchBehavior = CONSUME_NO_LINK_TOUCH) : LinkMovementMethod() {
     override fun onTouchEvent(widget: TextView, buffer: Spannable, event: MotionEvent): Boolean {
-        if (event.action != MotionEvent.ACTION_UP) return super.onTouchEvent(widget, buffer, event)
+        if (event.action != MotionEvent.ACTION_UP && event.action != MotionEvent.ACTION_DOWN) return consumeTouch.behavior
         var x = event.x.toInt()
         var y = event.y.toInt()
         x -= widget.totalPaddingLeft
@@ -48,22 +49,32 @@ abstract class TextViewLinkHandler(private val dispatchTouch: Boolean = true) : 
             widget.layout.let { it.getOffsetForHorizontal(it.getLineForVertical(y), x.toFloat()) }
         val link = buffer.getSpans(off, off, URLSpan::class.java)
         if (!link.isNullOrEmpty()) {
-            onLinkClick(link[0].url)
-            return true
+            return if(event.action == MotionEvent.ACTION_UP){
+                onLinkClick(link[0].url)
+                true
+            } else {
+                true
+            }
         }
-        return !dispatchTouch
+        return consumeTouch.behavior
     }
     abstract fun onLinkClick(link: String)
+
+    enum class DispatchNoLinkTouchBehavior(val behavior: Boolean){
+        CONSUME_NO_LINK_TOUCH(true),
+        DISPATCH_NO_LINK_TOUCH(false)
+    }
 }
 
-class ExternalLinkHandler(dispatchTouch: Boolean = false, private val action: (String) -> Unit) : TextViewLinkHandler(dispatchTouch) {
+class ExternalLinkHandler(dispatchTouch: DispatchNoLinkTouchBehavior = CONSUME_NO_LINK_TOUCH,
+                          private val action: (String) -> Unit) : TextViewLinkHandler(dispatchTouch) {
     override fun onLinkClick(link: String) {
         action(link)
     }
 }
 
 class LinkHandlerStub(
-    dispatchTouch: Boolean = false
+    dispatchTouch: DispatchNoLinkTouchBehavior = CONSUME_NO_LINK_TOUCH
 ) : TextViewLinkHandler(dispatchTouch) {
 
     override fun onLinkClick(link: String) {

@@ -12,13 +12,30 @@
  *  limitations under the License.
  */
 
-package com.starsoft.myandroidutil.navigationUtils.enums
+package com.starsoft.myandroidutil.collectionUtils
 
 
 /**
- * Created by Dmitry Starkin on 13.02.2022 18:54.
+ * Created by Dmitry Starkin on 24.05.2022 20:34.
  */
-enum class ReplaceBehavior(val behavior: Boolean) {
-    Replace(true),
-    Add(false)
+
+fun <T> Iterable<T>.removeAdjacent(): List<T> {
+    var last: T? = null
+    return mapNotNull {
+        if (it == last) {
+            null
+        } else {
+            last = it
+            it
+        }
+    }
 }
+
+
+fun <T> listOfCollections(vararg elements: Collection<T>): List<T> = if (elements.isNotEmpty()) {
+    ArrayList<T>().apply {
+        elements.forEach {
+            addAll(it)
+        }
+    }
+} else {emptyList()}

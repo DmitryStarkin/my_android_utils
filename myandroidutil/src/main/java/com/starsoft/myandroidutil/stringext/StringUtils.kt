@@ -23,7 +23,10 @@ import android.os.Build
 import android.os.LocaleList
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.text.style.StyleSpan
+import android.text.style.URLSpan
+import android.widget.TextView
 import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
 import androidx.core.text.toSpannable
@@ -49,10 +52,47 @@ fun String.insertTo(position: Int, string: CharSequence): CharSequence{
     return StringBuilder(this).insert(position, string) as CharSequence
 }
 
+fun TextView.addLinkMovementMethod() {
+    val method = movementMethod
+    if (!linksClickable) {
+        linksClickable = true
+    }
+    if (method == null || method !is LinkMovementMethod) {
+        movementMethod = LinkMovementMethod.getInstance()
+    }
+}
+
+fun TextView.convertMatchesToUrlLink(regexString: String, url: String) {
+    val converted = text.convertMatchesToUrlLink(regexString, url)
+    text = converted
+    addLinkMovementMethod()
+}
+
+fun TextView.convertMatchesToUrlLink(links: List<WebLink>) {
+    var converted = text
+    links.forEach {
+        converted = converted.convertMatchesToUrlLink(it.text, it.url)
+    }
+    text = converted
+    addLinkMovementMethod()
+}
+
+data class WebLink(
+    val text: String,
+    val url: String
+)
+
+fun CharSequence.convertMatchesToUrlLink(regexString: String, url: String): Spannable =
+    this.applyStyleSpanToMatches(regexString, URLSpan(url))
+
+fun TextView.applyStyleSpanToMatches(regexString: String, span: StyleSpan){
+    this.text = this.text.toString().applyStyleSpanToMatches(regexString, span)
+}
+
 fun String.boldMatches(regexString: String): Spannable =
     this.applyStyleSpanToMatches(regexString, BOLD_SPAN)
 
-fun String.applyStyleSpanToMatches(regexString: String, span: StyleSpan): Spannable {
+fun CharSequence.applyStyleSpanToMatches(regexString: String, span: Any): Spannable {
     val result = SpannableString.valueOf(this)
     if(regexString.isEmpty()) return result
     val pattern = try{

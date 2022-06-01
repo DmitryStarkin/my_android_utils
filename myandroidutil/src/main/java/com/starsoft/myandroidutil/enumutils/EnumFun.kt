@@ -34,3 +34,5 @@ fun Array<out Enum<*>>.getOrdinals(): List<Int> {
     }
     return names.toList()
 }
+
+
