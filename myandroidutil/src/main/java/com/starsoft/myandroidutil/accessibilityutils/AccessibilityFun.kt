@@ -16,12 +16,19 @@
 
 package com.starsoft.myandroidutil.accessibilityutils
 
+import android.accessibilityservice.AccessibilityService
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Point
+import android.graphics.Region
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
+import com.starsoft.myandroidutil.logutils.d
 import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
 import com.starsoft.myandroidutil.stringext.insertTo
@@ -137,4 +144,83 @@ fun isAccessibilityServiceEnabled(serviceId: String): Boolean {
         }
     }
     return false
+}
+
+fun Context.cancelBypassTouchExploration(service: AccessibilityService): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        display?.let {
+            service.cancelBypassTouchExploration(
+                it.displayId
+            )
+        } ?: false
+    } else {
+        false
+    }
+
+
+fun Context.bypassTouchExploration(service: AccessibilityService): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            this@bypassTouchExploration.display?.let {
+                val displaySize = Point()
+                it.getRealSize(displaySize)
+                service.bypassTouchExploration(
+                    it.displayId,
+                    displaySize
+                )
+            } ?: false
+
+    } else {false}
+
+
+
+
+/**
+ * set  Bypass Touch Exploration in screen region
+ * @param displaySize screen region for Bypass Touch Exploration
+ * @return true if success false otherwise
+ */
+@SuppressLint("NewApi")
+fun AccessibilityService.bypassTouchExploration(displayId: Int, displaySize: Point): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+        isTouchExplorationEnabled() &&
+        isAccessibilityServiceEnabled(this.serviceInfo.id)
+    ) {
+        val touchRegion = Region(0, 0, displaySize.x, displaySize.y)
+            setTouchExplorationPassthroughRegion(displayId, touchRegion)
+            return true
+
+    }
+    return false
+}
+
+/**
+ * cancel Bypass Touch Exploration
+ *
+ * @return true if success false otherwise
+ */
+@SuppressLint("NewApi")
+fun AccessibilityService.cancelBypassTouchExploration(displayId: Int): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+        isTouchExplorationEnabled() &&
+        isAccessibilityServiceEnabled(this.serviceInfo.id)
+    ) {
+            setTouchExplorationPassthroughRegion(displayId, Region())
+            return true
+    }
+    return false
+}
+
+/**
+ * forces Acceptability to say the views text  if TouchExploration is enabled
+ * @param view view to say
+ */
+fun announceTextFromView(view: View?) {
+    if (view != null && view.visibility == View.VISIBLE && view is TextView && isTouchExplorationEnabled()) {
+        val event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT)
+        event.className = view.javaClass.name
+        event.packageName = view.getContext().packageName
+        event.isEnabled = true
+        event.text.add(view.text)
+        getAccessibilityManager().sendAccessibilityEvent(event)
+    }
 }

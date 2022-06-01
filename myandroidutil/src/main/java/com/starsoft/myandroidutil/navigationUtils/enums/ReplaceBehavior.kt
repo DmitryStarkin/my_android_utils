@@ -20,5 +20,5 @@ package com.starsoft.myandroidutil.navigationUtils.enums
  */
 enum class ReplaceBehavior(val behavior: Boolean) {
     Replace(true),
-    NotReplace(false)
+    Add(false)
 }

@@ -45,4 +45,9 @@ class HoverConstraint  @JvmOverloads constructor(
         }
         return false
     }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        ev?.apply { touchInterceptor?.invoke(this) }
+        return super.dispatchTouchEvent(ev)
+    }
 }

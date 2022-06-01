@@ -38,6 +38,21 @@ private const val DIALOG_TAG: String = "dialogTag"
 
 private val isDebug = ContextProvider.context.getBuildConfigValue("DEBUG") as Boolean? ?: false
 
+private var toast: Toast? = null
+
+@JvmOverloads
+fun manageToast(toast: Toast?, cancelPrevious: PreviousCancelBehavior = PreviousCancelBehavior.CancelPrevious) {
+    if (cancelPrevious.behavior) {
+        com.starsoft.myandroidutil.uimessageutils.toast?.cancel()
+    }
+    com.starsoft.myandroidutil.uimessageutils.toast = toast
+}
+
+enum class PreviousCancelBehavior(val behavior: Boolean){
+    CancelPrevious(true),
+    NotCancelPrevious(false)
+}
+
 fun Context.makeShortToast(message: String): Toast = Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
     if (message.isNotEmpty()) {
         show()

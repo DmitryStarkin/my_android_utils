@@ -15,11 +15,13 @@
 package com.starsoft.myandroidutil.navigationUtils.routerImpl
 
 import android.app.Activity
+import android.app.Fragment
 import android.app.Service
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import androidx.annotation.AnimRes
 import androidx.annotation.AnimatorRes
@@ -33,6 +35,7 @@ import com.starsoft.myandroidutil.navigationUtils.enums.RoutPolicy
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Host
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Rout
 import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by Dmitry Starkin on 06.02.2022 16:30.
@@ -56,6 +59,8 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         private const val TRANSITION_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.routerTransition"
         private const val ALWAYS_HIDE_FLAG = "com.starsoft.myandroidutil.navigationUtils.routerImpl.alwaysHide"
         private const val ALWAYS_REMOVE_FLAG = "com.starsoft.myandroidutil.navigationUtils.routerImpl.alwaysRemove"
+        private const val CUSTOMIZE_TRANSACTION_FUN_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.customizeTransactionFun"
+        private const val CUSTOMIZE_INTENT_FUN_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.customizeIntentFun"
 
         fun Bundle?.addReplaceFlag(replaceBehavior: ReplaceBehavior): Bundle =
             this?.let {
@@ -100,6 +105,28 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
             bundleOf(
                 BACK_STACK_FLAG_KEY to this.behavior
             )
+
+        fun ((FragmentTransaction, Fragment) -> Unit).packToBundle(): Bundle =
+            bundleOf(
+                CUSTOMIZE_TRANSACTION_FUN_KEY to TransactionCustomizeWrapper(this)
+            )
+
+        fun Bundle?.addBackTransactionCustomiseFun(customize: (FragmentTransaction, Fragment) -> Unit): Bundle =
+            this?.let {
+                it.putParcelable(CUSTOMIZE_TRANSACTION_FUN_KEY, TransactionCustomizeWrapper(customize))
+                it
+            } ?: customize.packToBundle()
+
+        fun ((Intent) -> Unit).packToBundle(): Bundle =
+            bundleOf(
+                CUSTOMIZE_INTENT_FUN_KEY to IntentCustomizeWrapper(this)
+            )
+
+        fun Bundle?.addBackIntentCustomiseFun(customize: (Intent) -> Unit): Bundle =
+            this?.let {
+                it.putParcelable(CUSTOMIZE_INTENT_FUN_KEY, IntentCustomizeWrapper(customize))
+                it
+            } ?: customize.packToBundle()
 
         fun Bundle?.addAnimation(@AnimatorRes @AnimRes enter: Int,
                                  @AnimatorRes @AnimRes exit: Int): Bundle =
@@ -147,6 +174,20 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                 this.getInt(TRANSITION_KEY)
             }
 
+        private fun Bundle?.getTransactionCustomizeFunction(): TransactionCustomizeWrapper? =
+            if(this == null || !this.containsKey(CUSTOMIZE_TRANSACTION_FUN_KEY)){
+                null
+            } else {
+                getParcelable(CUSTOMIZE_TRANSACTION_FUN_KEY) as TransactionCustomizeWrapper?
+            }
+
+        private fun Bundle?.getIntentCustomizeFunction(): IntentCustomizeWrapper? =
+            if(this == null || !this.containsKey(CUSTOMIZE_INTENT_FUN_KEY)){
+                null
+            } else {
+                getParcelable(CUSTOMIZE_INTENT_FUN_KEY) as IntentCustomizeWrapper?
+            }
+
         private fun Bundle?.getEnterAnimation(): Int =
             this?.getInt(ENTER_ANIMATION_KEY, 0) ?: 0
 
@@ -188,6 +229,8 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
     val currentDestination = curEntry?.rout?.destination
 
     fun moveTo(rout: Rout, data: Bundle? = null) {
+        if(rout is Rout.RoutStub) return
+        if(rout is Rout.Close) closeCurrentFlow()
         val unionData = rout.data?.let {
             it.putAll(data)
             it
@@ -205,7 +248,7 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                 startService(rout, unionData, unionData.getReplaceFlag(config.defaultReplaceBehavior))
                 curEntry = Entry(rout, unionData.addBackStackBehavior(BackstackBehavior.NotAdd))
             }
-            rout is OpenLink -> {
+            rout is Rout.OpenLink -> {
                 openWebLink(rout.link)
             }
             else -> {
@@ -226,17 +269,35 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         val activity = getActivity(host)
         activity?.apply {
             if(activity.javaClass == rout.destination) return
-            startActivity(Intent(this, rout.destination).apply { data?.apply { putExtras(this) } })
+            startActivity(Intent(this, rout.destination).apply {
+                data?.let {
+                        it.getIntentCustomizeFunction()?.customize(this)
+                        putExtras(it)
+                    }
+                }
+            )
         }
         if (needFinish) {
             activity?.finish()
         }
     }
 
+    private fun closeCurrentFlow(){
+        getActivity(host)?.apply {
+            finish()
+        }
+    }
+
     private fun startService(rout: Rout, data: Bundle?, needFinish: Boolean) {
         val activity = getActivity(host)
         activity?.apply {
-            startService(Intent(this, rout.destination).apply { data?.apply { putExtras(this) } })
+            startService(Intent(this, rout.destination).apply {
+                data?.let {
+                        it.getIntentCustomizeFunction()?.customize(this)
+                        putExtras(it)
+                    }
+                }
+            )
         }
         if (needFinish) {
             activity?.finish()
@@ -292,6 +353,7 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
     private fun switchFragment(fragment: Fragment, tag: String) {
         manager.beginTransaction()
             .removeFragments(tag)
+            .customize(fragment)
             .addOrShow(fragment, tag)
             .commit()
     }
@@ -300,6 +362,7 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         manager.beginTransaction()
             .hideAllFragments(emptyList())
             .setAnimations(fragment.arguments)
+            .customize(fragment)
             .add(host.getContainerId(), fragment, tag)
             .commit()
     }
@@ -308,8 +371,16 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         manager.beginTransaction()
             .hideAllFragments(listOf(fragment))
             .setAnimations(fragment.arguments)
+            .customize(fragment)
             .show(fragment)
             .commit()
+    }
+
+    private fun FragmentTransaction.customize(fragment: Fragment): FragmentTransaction{
+        fragment.arguments?.getTransactionCustomizeFunction()?.apply {
+            this.customize(this@customize, fragment)
+        }
+        return this
     }
 
     private fun FragmentTransaction.setAnimations(data: Bundle?):FragmentTransaction{
@@ -415,10 +486,14 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         }
     }
 
-    data class OpenLink
-        (val link: String) : Rout {
-        override val destination: Class<*>
-            get() = OpenLink::class.java
+    @Parcelize
+    private class TransactionCustomizeWrapper(val customizeAction: (FragmentTransaction, Fragment) -> Unit) : Parcelable {
+        fun customize(transaction: FragmentTransaction, fragment: Fragment) = customizeAction(transaction, fragment)
+    }
+
+    @Parcelize
+    private class IntentCustomizeWrapper(val customizeAction: (Intent) -> Unit) : Parcelable {
+        fun customize(intent: Intent) = customizeAction(intent)
     }
 
     private class HostStub(val hostFragment: Fragment? = null, val hostActivity: FragmentActivity? = null):
