@@ -12,13 +12,34 @@
  *  limitations under the License.
  */
 
-package com.starsoft.myandroidutil.navigationUtils.enums
+package com.starsoft.myandroidutil.errorUtil
 
 
 /**
- * Created by Dmitry Starkin on 13.02.2022 18:54.
+ * Created by Dmitry Starkin on 15.04.2022 11:27.
  */
-enum class ReplaceBehavior(val behavior: Boolean) {
-    Replace(true),
-    Add(false)
+
+fun runSafe(lambda: () -> Unit){
+    try {
+        lambda.invoke()
+    } catch (e: Throwable){
+        e.printStackTrace()
+    }
 }
+
+
+fun <T> runSafe(ifError:(Throwable) -> T, lambda: () -> T): T =
+    try {
+        lambda.invoke()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        ifError(e)
+    }
+
+fun <T, V> T.runSafe(ifError:T.(Throwable) -> V, lambda: T.() -> V): V =
+    try {
+        this.lambda()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        this.ifError(e)
+    }

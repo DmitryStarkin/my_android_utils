@@ -16,6 +16,9 @@ package com.starsoft.myandroidutil.coroutinesutil
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by Dmitry Starkin on 07.02.2022 10:56.
@@ -38,3 +41,23 @@ suspend fun <T, V> T.runSuspend(lambda: T.() -> V): V =
     withContext(Dispatchers.IO) {
         this@runSuspend.lambda()
     }
+
+
+
+interface  Caller<V> {
+    fun <V> call(onSusses: (V) -> Unit, onError: (Throwable) -> Unit)
+}
+
+/**
+ * universal extension functions for executing async requests from coroutines
+ */
+
+suspend fun <T : Caller<V>, V> T.runAsSuspend(): V {
+    return suspendCoroutine { continuation ->
+        this.call<V>({ result ->
+            continuation.resume(result)
+        }, { e ->
+            continuation.resumeWithException(e)
+        })
+    }
+}

@@ -24,4 +24,21 @@ interface Rout {
     val destination: Class<*>
     val data: Bundle?
         get() = null
+
+    val tag: String
+    get() = destination.name
+
+    class RoutStub(): Rout{
+        override val destination = RoutStub::class.java
+    }
+
+    class Close(): Rout{
+        override val destination = Close::class.java
+    }
+
+    data class OpenLink
+        (val link: String) : Rout {
+        override val destination: Class<*>
+            get() = OpenLink::class.java
+    }
 }

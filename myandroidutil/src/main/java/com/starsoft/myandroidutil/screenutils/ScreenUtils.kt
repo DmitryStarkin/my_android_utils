@@ -39,8 +39,8 @@ fun MotionEvent?.isTouchInside(view: View?): Boolean {
     this ?: return false
     val vLoc = IntArray(2)
     view.getLocationOnScreen(vLoc)
-    val touchX = this.x.toInt()
-    val touchY = this.y.toInt()
+    val touchX = this.rawX.toInt()
+    val touchY = this.rawY.toInt()
     val xBound = vLoc[0] + view.measuredWidth
     val yBound = vLoc[1] +  view.measuredHeight
     return (touchX > vLoc[0] && touchX < xBound) && (touchY > vLoc[1] && touchY < yBound)

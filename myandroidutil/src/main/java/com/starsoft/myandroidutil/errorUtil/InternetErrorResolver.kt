@@ -73,5 +73,5 @@ fun Context.resolveErrorByCode(code: Int): String =
         524 -> { getString(R.string.code_524) }
         525 -> { getString(R.string.code_525) }
         526 -> { getString(R.string.code_526) }
-        else ->{ getString(R.string.unknown) }
+        else ->{ "${getString(R.string.witch_code)} $code" }
     }

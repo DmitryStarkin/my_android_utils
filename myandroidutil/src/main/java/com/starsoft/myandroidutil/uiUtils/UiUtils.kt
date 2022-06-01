@@ -119,11 +119,3 @@ fun pixelsToSp(context: Context, px: Float): Float {
         context.resources.displayMetrics.scaledDensity
     return px / scaledDensity
 }
-
-fun TextView.boldMatches(regexString: String) {
-    this.applyStyleSpanToMatches(regexString, BOLD_SPAN)
-}
-
-fun TextView.applyStyleSpanToMatches(regexString: String, span: StyleSpan){
-    this.text = this.text.toString().applyStyleSpanToMatches(regexString, span)
-}
