@@ -15,6 +15,7 @@
 <resources>
     <string name="error">"Error "</string>
     <string name="unknown">unknown</string>
+    <string name="witch_code">witch code</string>
     <string name="code_400">400 Bad Request</string>
     <string name="code_401">401 Unauthorized</string>
     <string name="code_402">402 Payment Required</string>
