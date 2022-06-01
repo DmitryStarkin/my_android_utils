@@ -15,7 +15,7 @@
 package com.starsoft.myandroidutil.navigationUtils.routerImpl
 
 import android.app.Activity
-import android.app.Fragment
+import androidx.fragment.app.*
 import android.app.Service
 import android.content.ActivityNotFoundException
 import android.content.Intent
