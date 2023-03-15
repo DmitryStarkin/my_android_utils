@@ -27,7 +27,6 @@ import androidx.annotation.AnimRes
 import androidx.annotation.AnimatorRes
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
-import androidx.fragment.app.*
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.navigationUtils.enums.BackstackBehavior
 import com.starsoft.myandroidutil.navigationUtils.enums.ReplaceBehavior

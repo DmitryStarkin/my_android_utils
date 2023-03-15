@@ -39,3 +39,54 @@ fun <T> listOfCollections(vararg elements: Collection<T>): List<T> = if (element
         }
     }
 } else {emptyList()}
+
+
+fun <T>  Collection<T>.isLastIndex(index: Int): Boolean = (size - 1) == index
+
+
+fun <T> Array<T>.getNext(item: T): T{
+
+    forEachIndexed { index, currentItem ->
+        if(currentItem == item){
+            return if(index == lastIndex){
+                this[0]
+            } else {
+                this[index + 1]
+            }
+        }
+    }
+    return this[0]
+}
+
+fun <T> List<T>.removeLast(): List<T> =
+    if(isEmpty()){
+        this
+    } else {
+        (this as MutableList<T>).removeAt(this.lastIndex)
+        this
+    }
+
+fun <T> List<T>.add(item: T) =
+    (this as MutableList<T>).add(item)
+
+fun <T> List<T>.addAndReturnNewInstance(item: T): List<T> = ArrayList<T>().also {
+    it.addAll(this)
+    it.add(item)
+}
+
+fun <T> List<T>.addToPosAndReturnNewInstance(item: T, position: Int): List<T> = ArrayList<T>().also {
+    it.addAll(this)
+    if(this.lastIndex >= position){
+        it.add(position, item)
+    } else {
+        it.add(item)
+    }
+}
+
+fun <T> Collection<T>.containsAnyItemFrom(other: Collection<T>): Boolean{
+
+    other.forEach {
+        if(it in this) return true
+    }
+    return false
+}
