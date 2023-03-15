@@ -114,34 +114,3 @@ fun Context.openWebLink(link: String, choicerMessage: String = EMPTY_STRING) {
         }
     }
 }
-
-fun Context.sendEmail(eMails: Array<String>, fields: EmailsField = EmailsField() ) {
-    if(eMails.isNotEmpty()) {
-        val intent = Intent()
-        intent.action = Intent.ACTION_SEND
-        intent.type = "message/rfc822"
-        intent.putExtra(Intent.EXTRA_EMAIL, eMails)
-//        TODO Dmitry
-        intent.putExtra(Intent.EXTRA_SUBJECT, fields.sender)
-        intent.putExtra(Intent.EXTRA_TEXT, fields.caption)
-
-        val packageManager = this.applicationContext.packageManager
-        val matches: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
-
-        if (matches.isNotEmpty()) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            val choicer = Intent.createChooser(intent, fields.choicerMessage)
-            choicer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.applicationContext.startActivity(choicer);
-        } else if (fields.reserveLink.isNotEmpty()) {
-            this.openWebLink(fields.reserveLink)
-        }
-    }
-}
-
-data class EmailsField(
-        val choicerMessage: String = EMPTY_STRING,
-        val sender : String = EMPTY_STRING,
-        val caption : String = EMPTY_STRING,
-        val reserveLink: String = EMPTY_STRING
-)

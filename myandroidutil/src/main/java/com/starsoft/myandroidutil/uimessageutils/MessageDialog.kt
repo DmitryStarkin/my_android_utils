@@ -58,25 +58,25 @@ class MessageDialog: AppCompatDialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(activity!!)
-        val inflater = activity!!.layoutInflater
-        if (arguments!!.getInt(BODY_DIALOG_TAG) != 0) {
-            builder.setView(inflater.inflate(arguments!!.getInt(BODY_DIALOG_TAG), null))
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        val inflater = requireActivity().layoutInflater
+        if (requireArguments().getInt(BODY_DIALOG_TAG) != 0) {
+            builder.setView(inflater.inflate(requireArguments().getInt(BODY_DIALOG_TAG), null))
         }
-        builder.setTitle(arguments!!.getString(DIALOG_MESSAGE_TAG))
-            .setMessage(arguments!!.getString(BODY_MESSAGE_TAG))
+        builder.setTitle(requireArguments().getString(DIALOG_MESSAGE_TAG))
+            .setMessage(requireArguments().getString(BODY_MESSAGE_TAG))
             .apply {
-                if (arguments!!.getInt(ICON_DIALOG_TAG) != 0) {
-                    setIcon(arguments!!.getInt(ICON_DIALOG_TAG))
+                if (requireArguments().getInt(ICON_DIALOG_TAG) != 0) {
+                    setIcon(requireArguments().getInt(ICON_DIALOG_TAG))
                 }
             }
-            .setPositiveButton(arguments!!.getString(OK_BUTTON_NAME)) { dialog, which ->
+            .setPositiveButton(requireArguments().getString(OK_BUTTON_NAME)) { dialog, which ->
                 dialog.cancel()
                 OKListener?.apply {
                     invoke(dialog, which)
                 }
             }
-            .setNegativeButton(arguments!!.getString(CANCEL_BUTTON_NAME)) { dialog, which ->
+            .setNegativeButton(requireArguments().getString(CANCEL_BUTTON_NAME)) { dialog, which ->
                 dialog.cancel()
                 cancelListener?.apply {
                     invoke(dialog, which)

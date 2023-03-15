@@ -27,6 +27,8 @@
         tools:node="merge"
         />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
 
         >

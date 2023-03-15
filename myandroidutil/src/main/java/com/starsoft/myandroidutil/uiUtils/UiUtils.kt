@@ -17,22 +17,28 @@ package com.starsoft.myandroidutil.uiUtils
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.os.Build
 import android.os.IBinder
-import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.TextView
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.starsoft.myandroidutil.stringext.BOLD_SPAN
-import com.starsoft.myandroidutil.stringext.applyStyleSpanToMatches
+import com.starsoft.myandroidutil.R
+import com.starsoft.myandroidutil.shimmer.Shimmer
+import kotlin.random.Random
+import com.starsoft.myandroidutil.shimmer.ShimmerDrawable
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 14:01.
  */
+
+const val TRANSPARENT_COLOR = 0x00000000
+
 fun Context.resolveOrThrow(@AttrRes attributeResId: Int): Int {
     val typedValue = TypedValue()
     if (this.theme.resolveAttribute(attributeResId, typedValue, true)) {
@@ -118,4 +124,37 @@ fun pixelsToSp(context: Context, px: Float): Float {
     val scaledDensity =
         context.resources.displayMetrics.scaledDensity
     return px / scaledDensity
+}
+
+fun View.createShimmerWitchColor(color: Int, corners: Int = 0): ShimmerDrawable =
+    ShimmerDrawable().apply {
+        setCorner(corners)
+        shimmer = Shimmer.ColorHighlightBuilder()
+            .setBaseColor(color)
+            .setHighlightColor(color)
+            .setDirection(Shimmer.Direction.LEFT_TO_RIGHT)
+            .setBaseAlpha(1f)
+            .setHighlightAlpha(0.98f)
+            .setDuration(500L)
+            .setDropoff(0.8f)
+            .setIntensity(0.9f)
+            .setTilt(10f)
+            .setShape(Shimmer.Shape.LINEAR)
+            .setStartDelay(Random.nextLong(0L, 200L))
+            .build()
+        startShimmer()
+    }
+
+
+@RequiresApi(Build.VERSION_CODES.M)
+fun View.createShimmer(@ColorRes color: Int? = null, corners: Int = 0): ShimmerDrawable {
+    val baseColor = color?.let { this@createShimmer.context.getColor(it) }
+        ?: this@createShimmer.context.getPrimaryColor()
+    return this.createShimmerWitchColor(baseColor, corners)
+}
+
+fun Context.getPrimaryColor(): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(R.attr.colorPrimary, typedValue, true)
+    return typedValue.data
 }

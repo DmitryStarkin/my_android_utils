@@ -27,7 +27,6 @@ fun runSafe(lambda: () -> Unit){
     }
 }
 
-
 fun <T> runSafe(ifError:(Throwable) -> T, lambda: () -> T): T =
     try {
         lambda.invoke()

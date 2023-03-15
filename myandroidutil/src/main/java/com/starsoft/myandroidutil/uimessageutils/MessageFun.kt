@@ -26,7 +26,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.refutils.getBuildConfigValue
@@ -97,7 +96,7 @@ fun View.makeSnackBarMessage(
 ) {
     val bar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
     duration?.apply { bar.duration = this }
-    action?.apply { bar.setAction(R.string.button_ok, action) }
+    action?.apply { bar.setAction(com.starsoft.myandroidutil.R.string.button_ok, action) }
     if (isError) {
         bar.applyErrorStyle()
     }
@@ -159,7 +158,7 @@ fun Context.createDialog(@LayoutRes layoutId: Int): AlertDialog? = AlertDialog.B
 fun Snackbar.applyErrorStyle(): Snackbar = this.also {
     view.setBackgroundColor(ContextCompat.getColor(view.context, android.R.color.holo_red_light))
     view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).also {
-        it.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_error_outline, 0, 0, 0)
+        it.setCompoundDrawablesWithIntrinsicBounds(com.starsoft.myandroidutil.R.drawable.ic_error_outline, 0, 0, 0)
         it.compoundDrawablePadding = 10
     }
 }

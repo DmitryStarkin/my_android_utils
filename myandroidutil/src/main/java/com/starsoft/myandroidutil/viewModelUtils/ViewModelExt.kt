@@ -12,27 +12,43 @@
  *  limitations under the License.
  */
 
+
+
 package com.starsoft.myandroidutil.viewModelUtils
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-
 
 /**
  * Created by Dmitry Starkin on 01.08.2021 14:43.
  */
 
-inline fun <reified T : ViewModel> Fragment.viewModel(): Lazy<T> = lazy {
+class ModelFactory<V : ViewModel> (
+    private val model:  V
+): ViewModelProvider.NewInstanceFactory() {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return if(modelClass == model.javaClass){
+            model as T
+        } else {
+            ViewModelProvider.NewInstanceFactory().create(modelClass)
+        }
+    }
+}
+
+inline fun <reified T : ViewModel> ViewModelStoreOwner.initViewModel(crossinline init: () -> T): Lazy<T> = lazy {
+    ViewModelProvider(this, ModelFactory(init())).get(T::class.java)
+}
+
+inline fun <reified T : ViewModel> initSharedViewModel(crossinline owner: () -> ViewModelStoreOwner, crossinline init: () -> T): Lazy<T> = lazy {
+    ViewModelProvider(owner(), ModelFactory(init())).get(T::class.java)
+}
+
+inline fun <reified T : ViewModel> ViewModelStoreOwner.viewModel(): Lazy<T> = lazy {
     ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(T::class.java)
 }
 
-inline fun <reified T : ViewModel> Fragment.sharedViewModel(crossinline owner: () -> ViewModelStoreOwner): Lazy<T> = lazy {
+inline fun <reified T : ViewModel> sharedViewModel(crossinline owner: () -> ViewModelStoreOwner): Lazy<T> = lazy {
     ViewModelProvider(owner(), ViewModelProvider.NewInstanceFactory()).get(T::class.java)
-}
-
-inline fun <reified T : ViewModel> AppCompatActivity.viewModel(): Lazy<T> = lazy {
-    ViewModelProvider(this, androidx.lifecycle.ViewModelProvider.NewInstanceFactory()).get(T::class.java)
 }

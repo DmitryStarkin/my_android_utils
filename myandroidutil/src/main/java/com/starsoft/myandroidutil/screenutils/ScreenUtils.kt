@@ -16,9 +16,13 @@
 
 package com.starsoft.myandroidutil.screenutils
 
+import android.content.Context
 import android.graphics.Point
+import android.os.Build
+import android.view.Display
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 
 
 // This File Created at 25.11.2020 12:56.
@@ -60,4 +64,26 @@ private fun View.getDisplaySizePoint(): Point {
     val displaySize = Point()
     this.display?.getRealSize(displaySize)
     return displaySize
+}
+
+/**
+ * Returns the size of the display in pixels by delegating to [Display.getRealSize].
+ */
+@Suppress("DEPRECATION")
+fun Context.getDisplaySizeInPixels(): Point {
+    val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val bounds = windowManager.currentWindowMetrics.bounds
+        Point(bounds.width(),  bounds.height() )
+    } else {
+        val displaySize = Point()
+        windowManager.defaultDisplay.getRealSize(displaySize)
+        return displaySize
+    }
+}
+
+
+fun Context.getDisplayDensity(): Int {
+    val  metrics = resources.displayMetrics
+    return metrics.densityDpi
 }

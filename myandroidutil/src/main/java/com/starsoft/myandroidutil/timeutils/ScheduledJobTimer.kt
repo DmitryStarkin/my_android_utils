@@ -24,6 +24,10 @@ import android.os.Message
  */
 class ScheduledJobTimer : Handler(Looper.getMainLooper()) {
 
+    private val emptyJob: () -> Unit by lazy {
+        {}
+    }
+
     override fun handleMessage(msg: Message) {
         if (msg.obj is ScheduledJob) {
             (msg.obj as ScheduledJob).execute()
@@ -36,7 +40,7 @@ class ScheduledJobTimer : Handler(Looper.getMainLooper()) {
         sendMessageDelayed(message, delay)
     }
 
-    fun schedule(tag: Int, delay: Long, job: () -> Unit){
+    fun schedule(tag: Int, delay: Long, job: () -> Unit = emptyJob){
         schedule(tag, delay, object :ScheduledJob{
             override fun execute() {
                 job.invoke()
