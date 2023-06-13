@@ -228,10 +228,17 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
     val currentDestination = curEntry?.rout?.destination
 
     fun moveTo(rout: Rout, data: Bundle? = null) {
-        if(rout is Rout.RoutStub) return
-        if(rout is Rout.Close) closeCurrentFlow()
+        if(rout is Rout.RoutStub) {
+            return
+        }
+        if(rout is Rout.Close) {
+            closeCurrentFlow()
+            return
+        }
         val unionData = rout.data?.let {
-            it.putAll(data)
+            data?.apply {
+                it.putAll(this)
+            }
             it
         } ?: data
         if (!config.routPolicy.allow && rout !in myRouts && !data.getIgnoreRoutPolicyFlag()) throw Exception("Wrong rout destination")
@@ -391,7 +398,7 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
 
     private fun showAsDialog(fragment: Fragment, tag: String): Boolean =
         if (fragment.javaClass.isInstanceOrExtend(DialogFragment::class.java)) {
-            manager.let{
+            manager?.let{
                 (fragment as DialogFragment).show(it, tag)
                 true
             } ?: false
@@ -461,7 +468,6 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                 throw Exception("wrong Host")
             }
         }
-
     }
 
     private fun getActivity(host: Host): Activity? {
