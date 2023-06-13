@@ -32,6 +32,7 @@ import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import com.starsoft.myandroidutil.stringext.isEmail
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.OutputStream
 
 /**
@@ -62,6 +63,43 @@ fun Context.getMyCacheDir(dir: DIRECTORY): File {
         directory.mkdirs()
     }
     return directory
+}
+
+fun Context.getMyCacheSubDir(dir: DIRECTORY, name: String): File =
+
+    File(getMyCacheDir(dir), name).let {
+        if(!it.exists()){
+            it.mkdirs()
+        }
+        it
+    }
+
+fun File.getSubDir(name: String): File =
+    if(!this.isDirectory){
+        throw Exception("must be an directory")
+    } else {
+        File(this, name).let {
+            if(!it.exists()){
+                it.mkdirs()
+            }
+            it
+        }
+    }
+
+fun Context.deleteMyCacheDir(dir: DIRECTORY): Boolean{
+
+    val directory = File(this.cacheDir.toString() + dir.directoryName)
+    return if (directory.exists()) {
+        try {
+            directory.deleteRecursively()
+            true
+        } catch (e: IOException){
+            e.printStackTrace()
+            false
+        }
+    } else{
+        true
+    }
 }
 
 fun Context.shareFile(file: File, mmeType: String, description: String, chooserMessage: String) {
@@ -95,7 +133,6 @@ fun Context.shareText(text: String, chooserMessage: String) {
     this.startActivity(chooser)
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun Context.getTempImageFile(
     image: Bitmap?,
@@ -118,7 +155,6 @@ fun Context.getTempImageFile(
     }
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun Context.getCompressedImageFile(image: Bitmap?, quality: Int, filePrefix: String): File {
     return this.getTempImageFile(
@@ -130,7 +166,6 @@ fun Context.getCompressedImageFile(image: Bitmap?, quality: Int, filePrefix: Str
     )
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun OutputStream.writeImage(
     image: Bitmap, format: Bitmap.CompressFormat = DEFAULT_IMAGE_FORMAT,
@@ -144,7 +179,6 @@ fun OutputStream.writeImage(
 
 
 //TODO check Uri has image content
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun Context.getBitmap(uri: Uri): Bitmap? {
     return this@getBitmap.contentResolver.openInputStream(uri)?.let {
@@ -154,7 +188,6 @@ fun Context.getBitmap(uri: Uri): Bitmap? {
     }
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun getBitmapFromBase64(source: String): Bitmap? {
     return Base64.decode(source, Base64.DEFAULT)?.let {
@@ -164,7 +197,6 @@ fun getBitmapFromBase64(source: String): Bitmap? {
     }
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun Context.getTempFileFromBase64(
     source: String,
@@ -254,7 +286,6 @@ private fun Int.getSteppedUp(quality: Int, topBound: Int = FULL_QUALITY): Pair<I
         (this / 2).getSteppedUp(quality, topBound)
     }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
 fun Context.getTemporaryImageFileFromUri(source: Uri, filePrefix: String): File {
     return File.createTempFile(

@@ -27,6 +27,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.shimmer.Shimmer
@@ -87,6 +88,25 @@ fun Activity.isKeyboardOpen(): Boolean {
 
 fun Activity.isKeyboardClosed(): Boolean {
     return !this.isKeyboardOpen()
+}
+
+
+/**
+ * Close keyboard using Insets
+ */
+fun android.app.Activity.hideKeyboard() {
+    WindowCompat.getInsetsController(window, window.decorView).apply {
+        hide(WindowInsetsCompat.Type.ime())
+    }
+}
+
+/**
+ * Show keyboard using Insets
+ */
+fun android.app.Activity.showKeyboard() {
+    WindowCompat.getInsetsController(window, window.decorView).apply {
+        show(WindowInsetsCompat.Type.ime())
+    }
 }
 
 fun View.isKeyboardVisible(): Boolean =

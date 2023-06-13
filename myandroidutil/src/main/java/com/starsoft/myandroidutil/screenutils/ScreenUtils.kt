@@ -50,6 +50,13 @@ fun MotionEvent?.isTouchInside(view: View?): Boolean {
     return (touchX > vLoc[0] && touchX < xBound) && (touchY > vLoc[1] && touchY < yBound)
 }
 
+fun MotionEvent.castTo(view: View): MotionEvent {
+    if(!isTouchInside(view)) throw Exception("touch must be inside this view")
+    val vLoc = IntArray(2)
+    view.getLocationOnScreen(vLoc)
+    return MotionEvent.obtain(downTime, eventTime, action, rawX - vLoc[0].toFloat(), rawY - vLoc[1].toFloat(), metaState)
+}
+
 fun View.pointPositionOnScreen(): Point {
     val location = IntArray(2)
     this.getLocationOnScreen(location)
