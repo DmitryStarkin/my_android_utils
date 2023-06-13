@@ -27,7 +27,7 @@ import java.lang.Exception
 
 
 // This File Created at 25.11.2020 12:37.
-
+@Deprecated("Deprecated")
 object FileSaver {
 
     private const val DEFAULT_COMRESSION = 80

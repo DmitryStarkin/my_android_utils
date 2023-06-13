@@ -34,15 +34,17 @@ private const val URI_SCHEME_FILE ="file"
 
 @Suppress("BlockingMethodInNonBlockingContext")
 @WorkerThread
-fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix: String): File {
+fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix: String, directory: DIRECTORY = DIRECTORY.CACHE_FILES): File {
     return File.createTempFile(
         filePrefix,
         System.currentTimeMillis().toString() + fileSuffix,
-        this@getTemporaryFileFromUri.getMyCacheDir(DIRECTORY.CACHE_FILES)
+        this@getTemporaryFileFromUri.getMyCacheDir(directory)
     ).also { file ->
         FileOutputStream(file).use { out ->
-            this@getTemporaryFileFromUri.contentResolver.openInputStream(source)?.copyTo(out)
-            out.flush()
+            this@getTemporaryFileFromUri.contentResolver.openInputStream(source)?.use{input ->
+                input.copyTo(out)
+                out.flush()
+            }
         }
         file.deleteOnExit()
     }

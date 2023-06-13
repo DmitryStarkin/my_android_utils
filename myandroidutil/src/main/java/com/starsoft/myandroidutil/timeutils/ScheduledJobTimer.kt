@@ -18,7 +18,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 
-
 /**
  * Created by Dmitry Starkin on 08.05.2021 12:57.
  */
@@ -34,19 +33,39 @@ class ScheduledJobTimer : Handler(Looper.getMainLooper()) {
         }
     }
 
-    private fun schedule(tag: Int, delay: Long, job: ScheduledJob) {
+    private fun schedule(tag: Int, delay: Long, job: ScheduledJob): Boolean {
         removeMessages(tag)
         val message: Message = obtainMessage(tag, job)
-        sendMessageDelayed(message, delay)
+        return sendMessageDelayed(message, delay)
     }
 
-    fun schedule(tag: Int, delay: Long, job: () -> Unit = emptyJob){
-        schedule(tag, delay, object :ScheduledJob{
+    fun schedule(tag: Int, delay: Long, job: () -> Unit = emptyJob): Boolean =
+        schedule(tag, delay, object : ScheduledJob {
             override fun execute() {
                 job.invoke()
             }
         })
-    }
+
+
+    fun tick(tag: Int, delay: Long, job: () -> Unit = emptyJob): Boolean =
+        schedule(tag, delay, object : ScheduledJob {
+            override fun execute() {
+                job.invoke()
+                tick(tag, delay, job)
+            }
+        })
+
+
+    fun tickUntil(tag: Int, delay: Long, endTime: Long, job: () -> Unit = emptyJob): Boolean =
+        schedule(tag, delay, object : ScheduledJob {
+            override fun execute() {
+                job.invoke()
+                if (System.currentTimeMillis() < endTime) {
+                    tick(tag, delay, job)
+                }
+            }
+        })
+
 
     fun hasJob(tag: Int): Boolean = hasMessages(tag)
 

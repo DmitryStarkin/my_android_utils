@@ -21,7 +21,7 @@ apply plugin: 'kotlin-android-extensions'
 group ='com.github.DmitryStarkin'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
 
     def getGitHash = { ->
@@ -33,12 +33,12 @@ android {
         return stdout.toString().trim()
     }
 
-    def appVersionCode = 37
-    def appVersionName = "0.11.0b" + "_" + getGitHash()
+    def appVersionCode = 38
+    def appVersionName = "0.12.0b" + "_" + getGitHash()
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode appVersionCode
         versionName appVersionName
         
