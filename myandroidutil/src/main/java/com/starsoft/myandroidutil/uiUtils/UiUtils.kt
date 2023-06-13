@@ -53,6 +53,10 @@ fun Context.resolveOrThrow(@AttrRes attributeResId: Int): Int {
 /**
  * Close keyboard using InputMethodManager
  */
+@Deprecated(
+    message = "Use hideKeyboard() instead",
+    replaceWith = ReplaceWith("hideKeyboard()", "io.shoplook.base.utils.hideKeyboard()")
+)
 fun android.app.Activity.hideKeyboard(token: IBinder) {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
         .hideSoftInputFromWindow(
@@ -61,13 +65,20 @@ fun android.app.Activity.hideKeyboard(token: IBinder) {
         )
 }
 
-//TODO this not work currently
+@Deprecated(
+    message = "this not work Use android.app.Activity.hideKeyboard() instead",
+    replaceWith = ReplaceWith("requireActivity().hideKeyboard()", "io.shoplook.base.utils.hideKeyboard()")
+)
 fun View.hideKeyboard() =
     ViewCompat.getWindowInsetsController(this)?.hide(WindowInsetsCompat.Type.ime())
 
 /**
  * Open keyboard on specific edit text using InputMethodManager
  */
+@Deprecated(
+    message = "Use showKeyboard() instead",
+    replaceWith = ReplaceWith("showKeyboard()", "io.shoplook.base.utils.showKeyboard()")
+)
 fun android.app.Activity.showKeyboard(editText: EditText) {
     editText.requestFocusFromTouch()
     (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
