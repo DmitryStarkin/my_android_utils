@@ -34,7 +34,7 @@ import com.starsoft.myandroidutil.navigationUtils.enums.RoutPolicy
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Host
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Rout
 import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Created by Dmitry Starkin on 06.02.2022 16:30.
