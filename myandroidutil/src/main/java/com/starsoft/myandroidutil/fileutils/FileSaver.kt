@@ -16,8 +16,6 @@ package com.starsoft.myandroidutil.fileutils
 
 import android.graphics.Bitmap
 import com.starsoft.myandroidutil.providers.ContextProvider
-import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
-import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import com.starsoft.simpleandroidasynclibrary.core.launch
 import com.starsoft.simpleandroidasynclibrary.executors.newSingleThreadPool
 import java.io.File

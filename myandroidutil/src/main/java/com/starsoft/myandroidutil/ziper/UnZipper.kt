@@ -17,11 +17,11 @@ package com.starsoft.myandroidutil.ziper
 import android.net.Uri
 import androidx.annotation.WorkerThread
 import com.starsoft.myandroidutil.UriUyils.getTemporaryFileFromUri
+import com.starsoft.myandroidutil.fileutils.DIRECTORY
 import com.starsoft.myandroidutil.fileutils.addFileFromStream
+import com.starsoft.myandroidutil.fileutils.getMyCacheDir
+import com.starsoft.myandroidutil.fileutils.getSubDir
 import com.starsoft.myandroidutil.providers.mainContext
-import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
-import com.starsoft.myandroidutil.sharingUtils.getSubDir
-import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile

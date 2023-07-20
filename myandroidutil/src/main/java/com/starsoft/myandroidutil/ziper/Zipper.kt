@@ -18,9 +18,10 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.IntRange
 import androidx.annotation.WorkerThread
+import com.starsoft.myandroidutil.UriUyils.getFileNameFromUri
+import com.starsoft.myandroidutil.fileutils.DIRECTORY
+import com.starsoft.myandroidutil.fileutils.getMyCacheDir
 import com.starsoft.myandroidutil.providers.mainContext
-import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
-import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -38,67 +39,111 @@ private const val MODE_WRITE = "w"
 private const val MODE_READ = "r"
 
 @WorkerThread
-fun File.zipCache(directory: DIRECTORY) {
-    zipDir(mainContext.getMyCacheDir(directory))
+fun File.zipCache(directory: DIRECTORY, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    zipDir(mainContext.getMyCacheDir(directory),compression, renameMap)
 }
 
 @WorkerThread
-fun Uri.zipCache(directory: DIRECTORY) {
-    zipDir(mainContext.getMyCacheDir(directory))
+fun Uri.zipCache(directory: DIRECTORY, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    zipDir(mainContext.getMyCacheDir(directory),compression, renameMap)
 }
 
 @WorkerThread
-fun File.zipDir(dir: File){
+fun File.zipDir(dir: File, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null){
     if(!dir.isDirectory){
         throw Exception("must be an directory")
     } else {
-        dir.listFiles()?.toList()?.let { zipFiles(it.toList()) }
+        dir.listFiles()?.toList()?.let { zipFiles(it.toList(),compression, renameMap) }
     }
 }
 
 @WorkerThread
-fun Uri.zipDir(dir: File){
+fun Uri.zipDir(dir: File, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null){
     if(!dir.isDirectory){
         throw Exception("must be an directory")
     } else {
-        dir.listFiles()?.toList()?.let { zipFiles(it.toList()) }
+        dir.listFiles()?.toList()?.let { zipFiles(it.toList(),compression, renameMap) }
     }
 }
 
 @WorkerThread
-fun File.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION) {
+fun File.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
     ZipOutputStream(BufferedOutputStream(FileOutputStream(this))).also{it.setLevel(compression)}.use { outStream ->
-        outStream.zipFiles(files)
+        outStream.zipFiles(files, renameMap)
     }
 }
 
 @WorkerThread
-fun Uri.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION) {
+fun File.zipUris(uris: List<Uri>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    ZipOutputStream(BufferedOutputStream(FileOutputStream(this))).also{it.setLevel(compression)}.use { outStream ->
+        outStream.zipUris(uris, renameMap)
+    }
+}
+
+@WorkerThread
+fun Uri.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
     mainContext.contentResolver.openFileDescriptor(this, MODE_WRITE).use { descriptor ->
         descriptor?.fileDescriptor?.let {
             ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{it.setLevel(compression)}.use { outStream ->
-                outStream.zipFiles(files)
+                outStream.zipFiles(files, renameMap)
             }
         }
     }
 }
 
+@WorkerThread
+fun Uri.zipUris(uris: List<Uri>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    mainContext.contentResolver.openFileDescriptor(this, MODE_WRITE).use { descriptor ->
+        descriptor?.fileDescriptor?.let {
+            ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{zipStream ->
+                zipStream.setLevel(compression)}.use { outStream ->
+                outStream.zipUris(uris, renameMap)
+            }
+        }
+    }
+}
 
 @WorkerThread
-fun Context.zipFiles(zipFile: Uri, files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION) {
+fun Context.zipFiles(zipFile: Uri, files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
     contentResolver.openFileDescriptor(zipFile, MODE_WRITE).use { descriptor ->
         descriptor?.fileDescriptor?.let {
             ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{stream ->
                 stream.setLevel(compression)}.use { outStream ->
-                outStream.zipFiles(files)
+                outStream.zipFiles(files, renameMap)
             }
         }
     }
 }
 
-private fun ZipOutputStream.zipFiles(files: List<File>) {
+
+private fun ZipOutputStream.zipUris(uris: List<Uri>, renameMap: HashMap<String, String>? = null) {
+    uris.forEach { file ->
+        mainContext.contentResolver.openFileDescriptor(file, MODE_READ).use { descriptor ->
+            descriptor?.fileDescriptor?.let {
+                val name = mainContext.getFileNameFromUri(file)
+                if(name != null){
+                    if(renameMap != null && name in renameMap.keys){
+                        putNextEntry(ZipEntry(renameMap.get(name) ?: name))
+                    } else {
+                        putNextEntry(ZipEntry(name))
+                    }
+                    BufferedInputStream(FileInputStream(it)).use { inStream ->
+                        inStream.copyTo(this)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun ZipOutputStream.zipFiles(files: List<File>, renameMap: HashMap<String, String>? = null) {
     files.forEach { file ->
-        putNextEntry(ZipEntry(file.name))
+        val name = file.name
+        if(renameMap != null && name in renameMap.keys){
+            putNextEntry(ZipEntry(renameMap.get(name) ?: name))
+        } else {
+            putNextEntry(ZipEntry(name))
+        }
         BufferedInputStream(FileInputStream(file)).use { inStream ->
             inStream.copyTo(this)
         }

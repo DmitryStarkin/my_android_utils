@@ -16,7 +16,9 @@
 
 package com.starsoft.myandroidutil.stringext
 
-// This File Created at 25.11.2020 13:26.
+/**
+ * Created by Dmitry Starkin at 25.11.2020 13:26.
+ */
 
 fun String.extractDomain(): String{
     return Regex(DOMAIN_REGEX_STRING).find(this)?.value ?: EMPTY_STRING
@@ -126,3 +128,10 @@ fun String?.isWebLink(): Boolean {
 fun String.extractMentionsData(): String {
     return this.replaceFirst(MENTIONS_TAG_PREFIX, "")
 }
+
+fun CharSequence?.isNotContainsWhiteSpace(): Boolean {
+    if (this.isNullOrEmpty()) return false
+    return this.matches(Regex(WHITE_SPACE_REGEX_STRING))
+}
+
+fun CharSequence?.isContainsWhiteSpace(): Boolean = !isNotContainsWhiteSpace()

@@ -29,6 +29,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.shimmer.Shimmer
 import kotlin.random.Random
@@ -53,10 +54,6 @@ fun Context.resolveOrThrow(@AttrRes attributeResId: Int): Int {
 /**
  * Close keyboard using InputMethodManager
  */
-@Deprecated(
-    message = "Use hideKeyboard() instead",
-    replaceWith = ReplaceWith("hideKeyboard()", "io.shoplook.base.utils.hideKeyboard()")
-)
 fun android.app.Activity.hideKeyboard(token: IBinder) {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
         .hideSoftInputFromWindow(
@@ -67,7 +64,7 @@ fun android.app.Activity.hideKeyboard(token: IBinder) {
 
 @Deprecated(
     message = "this not work Use android.app.Activity.hideKeyboard() instead",
-    replaceWith = ReplaceWith("requireActivity().hideKeyboard()", "io.shoplook.base.utils.hideKeyboard()")
+    replaceWith = ReplaceWith("requireActivity().hideKeyboard()", "com.starsoft.myandroidutil.uiUtils.hideKeyboard()")
 )
 fun View.hideKeyboard() =
     ViewCompat.getWindowInsetsController(this)?.hide(WindowInsetsCompat.Type.ime())
@@ -77,7 +74,7 @@ fun View.hideKeyboard() =
  */
 @Deprecated(
     message = "Use showKeyboard() instead",
-    replaceWith = ReplaceWith("showKeyboard()", "io.shoplook.base.utils.showKeyboard()")
+    replaceWith = ReplaceWith("showKeyboard()", "com.starsoft.myandroidutil.uiUtils.showKeyboard()")
 )
 fun android.app.Activity.showKeyboard(editText: EditText) {
     editText.requestFocusFromTouch()
@@ -89,6 +86,11 @@ fun Activity.getRootView(): View {
     return findViewById<View>(android.R.id.content)
 }
 
+
+@Deprecated(
+    message = "Use isKeyboardVisible() instead",
+    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.uiUtils.isKeyboardVisible()")
+)
 fun Activity.isKeyboardOpen(): Boolean {
     val visibleBounds = Rect()
     this.getRootView().getWindowVisibleDisplayFrame(visibleBounds)
@@ -97,10 +99,54 @@ fun Activity.isKeyboardOpen(): Boolean {
     return heightDiff > marginOfError
 }
 
+
+@Deprecated(
+    message = "Use isKeyboardInVisible() instead",
+    replaceWith = ReplaceWith("isKeyboardInVisible()", "com.starsoft.myandroidutil.uiUtils.isKeyboardInVisible()")
+)
 fun Activity.isKeyboardClosed(): Boolean {
     return !this.isKeyboardOpen()
 }
 
+fun Activity.isKeyboardVisible(): Boolean =
+    getRootView().isKeyboardVisible()
+
+fun Activity.isKeyboardInVisible(): Boolean =
+    !isKeyboardVisible()
+
+
+fun Fragment.isKeyboardVisible(): Boolean =
+    try {
+        requireActivity().getRootView().isKeyboardVisible()
+    } catch (e: Throwable) {
+        e.printStackTrace()
+        false
+    }
+
+fun Fragment.isKeyboardInVisible(): Boolean =
+    !isKeyboardVisible()
+
+/**
+ * Close keyboard using Insets
+ */
+fun Fragment.hideKeyboard() {
+    try {
+        requireActivity().hideKeyboard()
+    } catch (e: Throwable) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * Show keyboard using Insets
+ */
+fun Fragment.showKeyboard()  {
+    try {
+        requireActivity().showKeyboard()
+    } catch (e: Throwable) {
+        e.printStackTrace()
+    }
+}
 
 /**
  * Close keyboard using Insets

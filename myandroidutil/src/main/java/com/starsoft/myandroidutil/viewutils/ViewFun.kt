@@ -17,6 +17,9 @@
 package com.starsoft.myandroidutil.viewutils
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -24,12 +27,61 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
+import com.starsoft.myandroidutil.uiUtils.isKeyboardVisible
 
 
-// This File Created at 25.11.2020 13:00.
+/**
+ * Created by Dmitry Starkin at 25.11.2020 13:00.
+ */
+
 const val DEFAULT_ANIMATION_DELAY = 600L
+private const val REQUEST_LAYOUT_MAX_TIME = 5000L
+private const val REQUEST_LAYOUT_DELAY = 30L
+private const val REQUEST_LAYOUT_ATTEMPTS = (REQUEST_LAYOUT_MAX_TIME / REQUEST_LAYOUT_DELAY).toInt()
+
+private val mainHandler = Handler(Looper.getMainLooper())
+
+fun View.invokeAfterLayout(attempt: Int = 0, lambda: () -> Unit) {
+    if (isAttachedToWindow && !isLayoutRequested && !isInLayout) {
+        try {
+            lambda.invoke()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    } else {
+        if (attempt < REQUEST_LAYOUT_ATTEMPTS) {
+            mainHandler.postDelayed({
+                invokeAfterLayout(attempt + 1, lambda)
+            }, REQUEST_LAYOUT_DELAY)
+        }
+    }
+}
+
+fun Fragment.invokeAfterKeyboardOpened(lambda: () -> Unit) {
+    try {
+        requireActivity().invokeAfterKeyboardOpened(0, lambda)
+    } catch (e: Throwable) {
+        e.printStackTrace()
+    }
+}
+
+fun Activity.invokeAfterKeyboardOpened(attempt: Int = 0, lambda: () -> Unit) {
+    if (isKeyboardVisible()) {
+        try {
+            lambda.invoke()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    } else {
+        if (attempt < REQUEST_LAYOUT_ATTEMPTS) {
+            mainHandler.postDelayed({
+                invokeAfterKeyboardOpened(attempt + 1, lambda) }, REQUEST_LAYOUT_DELAY)
+        }
+    }
+}
 
 @JvmOverloads
 fun View.animation(transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
