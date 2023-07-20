@@ -20,6 +20,8 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
+import com.starsoft.myandroidutil.fileutils.DIRECTORY
+import com.starsoft.myandroidutil.fileutils.getMyCacheDir
 import com.starsoft.myandroidutil.sharingUtils.*
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.File

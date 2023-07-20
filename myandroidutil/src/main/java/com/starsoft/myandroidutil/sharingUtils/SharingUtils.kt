@@ -14,32 +14,36 @@
 
 package com.starsoft.myandroidutil.sharingUtils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Environment
 import android.util.Base64
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import com.starsoft.myandroidutil.UriUyils.getFileDataFromUri
+import com.starsoft.myandroidutil.fileutils.DIRECTORY
+import com.starsoft.myandroidutil.fileutils.getMyCacheDir
 import com.starsoft.myandroidutil.linkClickUtils.openWebLink
 import com.starsoft.myandroidutil.providers.ContextProvider
+import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import com.starsoft.myandroidutil.stringext.isEmail
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.OutputStream
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 13:05.
  */
+const val EXTENSION_JPEG = ".jpeg"
+const val EXTENSION_ZIP = ".zip"
 private val APPLICATION_ID = ContextProvider.context.packageName.toString()
-private const val EXTENSION_JPEG = ".jpeg"
 private const val FULL_QUALITY = 100
 private val DEFAULT_IMAGE_FORMAT = Bitmap.CompressFormat.JPEG
 private const val START_QUALITY = 80
@@ -47,60 +51,6 @@ private const val QUALITY_STEP = 40
 private const val ACCURACY_PRESENT = 5
 private const val BASE64_LEN_COEFFICIENT = 0.75f
 
-enum class DIRECTORY(val directoryName: String) {
-    CACHE_IMAGES("/images/"),
-    CACHE_FILES("/files/"),
-    CACHE_LOGS("/logs/"),
-    EXTERNAL_DOCUMENTS(
-        ContextProvider.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString()
-    )
-}
-
-fun Context.getMyCacheDir(dir: DIRECTORY): File {
-
-    val directory = File(this.cacheDir.toString() + dir.directoryName)
-    if (!directory.exists()) {
-        directory.mkdirs()
-    }
-    return directory
-}
-
-fun Context.getMyCacheSubDir(dir: DIRECTORY, name: String): File =
-
-    File(getMyCacheDir(dir), name).let {
-        if(!it.exists()){
-            it.mkdirs()
-        }
-        it
-    }
-
-fun File.getSubDir(name: String): File =
-    if(!this.isDirectory){
-        throw Exception("must be an directory")
-    } else {
-        File(this, name).let {
-            if(!it.exists()){
-                it.mkdirs()
-            }
-            it
-        }
-    }
-
-fun Context.deleteMyCacheDir(dir: DIRECTORY): Boolean{
-
-    val directory = File(this.cacheDir.toString() + dir.directoryName)
-    return if (directory.exists()) {
-        try {
-            directory.deleteRecursively()
-            true
-        } catch (e: IOException){
-            e.printStackTrace()
-            false
-        }
-    } else{
-        true
-    }
-}
 
 fun Context.shareFile(file: File, mmeType: String, description: String, chooserMessage: String) {
 
@@ -177,6 +127,16 @@ fun OutputStream.writeImage(
     }
 }
 
+@WorkerThread
+@SuppressLint("Recycle")
+fun Bitmap?.saveToUri(uri: Uri?, format: Bitmap.CompressFormat = DEFAULT_IMAGE_FORMAT,
+                      quality: Int = FULL_QUALITY) {
+    this?.let {
+        uri?.apply {
+            mainContext.contentResolver.openOutputStream(this)?.writeImage(it, format, quality)
+        }
+    }
+}
 
 //TODO check Uri has image content
 @WorkerThread
@@ -395,11 +355,20 @@ data class EmailsField(
     val reserveLink: String = EMPTY_STRING
 )
 
-class SaveJpgImage : ActivityResultContracts.CreateDocument() {
+class SaveJpgImage : CreateDocument(MME_TYPE_IMAGE_JPG) {
     override fun createIntent(context: Context, input: String): Intent {
         super.createIntent(context, input)
         return Intent(Intent.ACTION_CREATE_DOCUMENT)
             .setType(MME_TYPE_IMAGE_JPG)
+            .putExtra(Intent.EXTRA_TITLE, input)
+    }
+}
+
+class SaveZip : CreateDocument(MME_TYPE_ZIP) {
+    override fun createIntent(context: Context, input: String): Intent {
+        super.createIntent(context, input)
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .setType(MME_TYPE_ZIP)
             .putExtra(Intent.EXTRA_TITLE, input)
     }
 }

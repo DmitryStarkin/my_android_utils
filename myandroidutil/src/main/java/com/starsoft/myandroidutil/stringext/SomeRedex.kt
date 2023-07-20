@@ -21,11 +21,14 @@ import androidx.core.util.PatternsCompat
 /**
  * Created by Dmitry Starkin on 08.05.2021 13:38.
  */
+
 const val HASH_TAG_PREFIX = "#"
 
 const val MENTIONS_TAG_PREFIX = "@"
 
 const val LINK_PREFIX = "https://"
+
+const val WHITE_SPACE_REGEX_STRING = "^\\S*$"
 
 const val HASH_TAG_REGEX_STRING = "$HASH_TAG_PREFIX{1}[A-Za-z0-9\\W_][^$HASH_TAG_PREFIX\\s]*"
 

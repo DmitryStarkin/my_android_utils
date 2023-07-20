@@ -14,20 +14,105 @@
 
 package com.starsoft.myandroidutil.fileutils
 
+import android.content.Context
+import android.os.Environment
 import androidx.annotation.WorkerThread
+import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
-import com.starsoft.myandroidutil.sharingUtils.DIRECTORY
-import com.starsoft.myandroidutil.sharingUtils.getMyCacheDir
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
 
 /**
  * Created by Dmitry Starkin on 17.03.2023 13:18.
  */
+
+enum class DIRECTORY(val directoryName: String) {
+    CACHE_IMAGES("/images/"),
+    CACHE_FILES("/files/"),
+    CACHE_LOGS("/logs/"),
+    EXTERNAL_DOCUMENTS(
+        ContextProvider.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString()
+    )
+}
+
+fun Context.getMyCacheDir(dir: DIRECTORY): File {
+
+    val directory = File(this.cacheDir.toString() + dir.directoryName)
+    if (!directory.exists()) {
+        directory.mkdirs()
+    }
+    return directory
+}
+
+fun Context.getMyCacheSubDir(dir: DIRECTORY, name: String): File =
+
+    File(getMyCacheDir(dir), name).let {
+        if(!it.exists()){
+            it.mkdirs()
+        }
+        it
+    }
+
+fun File.getSubDir(name: String): File =
+    if(!this.isDirectory){
+        throw Exception("must be an directory")
+    } else {
+        File(this, name).let {
+            if(!it.exists()){
+                it.mkdirs()
+            }
+            it
+        }
+    }
+
+fun Context.deleteMyCacheDir(dir: DIRECTORY): Boolean{
+
+    val directory = File(this.cacheDir.toString() + dir.directoryName)
+    return if (directory.exists()) {
+        try {
+            directory.deleteRecursively()
+            true
+        } catch (e: IOException){
+            e.printStackTrace()
+            false
+        }
+    } else{
+        true
+    }
+}
+
+fun Context.getExtFilesDir(subdirName: String = EMPTY_STRING): File {
+    val filePath: String =
+      getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            .toString() + "/" + subdirName
+    return File(filePath).also {
+        if (!it.exists()) {
+            it.mkdir()
+            it.setReadable(true)
+        }
+    }
+}
+
+fun Context.deleteMyExternalFilesDir(subdirName: String): Boolean{
+    val directory = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        .toString() + "/" + subdirName)
+    return if (directory.exists()) {
+        try {
+            directory.deleteRecursively()
+            true
+        } catch (e: IOException){
+            e.printStackTrace()
+            false
+        }
+    } else{
+        true
+    }
+}
 
 @WorkerThread
 fun DIRECTORY.addFileFromStream(inputStream: InputStream, filename: String, overwrite: Boolean = true): File =

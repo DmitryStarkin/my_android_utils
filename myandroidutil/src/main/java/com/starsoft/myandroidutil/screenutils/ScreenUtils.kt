@@ -25,7 +25,9 @@ import android.view.View
 import android.view.WindowManager
 
 
-// This File Created at 25.11.2020 12:56.
+/**
+ * Created by Dmitry Starkin at 25.11.2020 12:56.
+ */
 
 fun View.isOver(view: View?): Boolean {
     view ?: return false
@@ -62,6 +64,12 @@ fun View.pointPositionOnScreen(): Point {
     this.getLocationOnScreen(location)
     return Point(location[0], location[1])
 }
+
+fun View.topOffsetOf(other: View): Int =
+    pointPositionOnScreen().y - other.pointPositionOnScreen().y
+
+fun View.leftOffsetOf(other: View): Int =
+    pointPositionOnScreen().x - other.pointPositionOnScreen().x
 
 /**
  * get display size
