@@ -263,13 +263,49 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         }
     }
 
+    fun stop(rout: Rout) {
+        if(rout is Rout.RoutStub) {
+            return
+        }
+        if(rout is Rout.OpenLink) {
+            return
+        }
+        if(rout is Rout.Close) {
+            closeCurrentFlow()
+            return
+        }
+        when {
+            rout.destination.isInstanceOrExtend(Fragment::class.java) -> {
+                removeFragment(rout)
+            }
+            rout.destination.isInstanceOrExtend(Activity::class.java) -> {
+                throw Exception("Unsupported")
+            }
+            rout.destination.isInstanceOrExtend(Service::class.java) -> {
+                stopAsService(rout)
+            }
+            else -> {
+                throw Exception("Wrong rout destination")
+            }
+        }
+    }
+
+    private fun removeFragment(rout: Rout){
+        manager.findFragmentByTag(rout.destination.name)?.apply {
+            if(!removeAsDialog(this)){
+                manager.beginTransaction()
+                    .remove(this)
+                    .commit()
+            }
+        }
+    }
+
     fun moveBack() {
         //TODO
     }
 
-    fun getAllFragments(): List<Fragment> {
-        TODO()
-    }
+    fun getAllFragments(): List<Fragment> =
+        manager.getAllFragments(emptyList())
 
     private fun moveToActivity(rout: Rout, data: Bundle?, needFinish: Boolean) {
         val activity = getActivity(host)
@@ -307,6 +343,14 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
         }
         if (needFinish) {
             activity?.finish()
+        }
+    }
+
+    private fun stopAsService(rout: Rout) {
+        val activity = getActivity(host)
+        activity?.apply {
+            stopService(Intent(this, rout.destination)
+            )
         }
     }
 
@@ -404,6 +448,14 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                 (fragment as DialogFragment).show(it, tag)
                 true
             } ?: false
+        } else {
+            false
+        }
+
+    private fun removeAsDialog(fragment: Fragment): Boolean =
+        if (fragment.javaClass.isInstanceOrExtend(DialogFragment::class.java)) {
+            (fragment as DialogFragment).dismiss()
+            true
         } else {
             false
         }

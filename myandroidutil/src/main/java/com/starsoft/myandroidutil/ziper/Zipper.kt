@@ -36,6 +36,7 @@ import java.util.zip.ZipOutputStream
  */
 
 private const val MODE_WRITE = "w"
+private const val MODE_REWRITE = "rwt"
 private const val MODE_READ = "r"
 
 @WorkerThread
@@ -82,7 +83,7 @@ fun File.zipUris(uris: List<Uri>, @IntRange(from = -1, to = 9) compression: Int 
 
 @WorkerThread
 fun Uri.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
-    mainContext.contentResolver.openFileDescriptor(this, MODE_WRITE).use { descriptor ->
+    mainContext.contentResolver.openFileDescriptor(this, MODE_REWRITE).use { descriptor ->
         descriptor?.fileDescriptor?.let {
             ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{it.setLevel(compression)}.use { outStream ->
                 outStream.zipFiles(files, renameMap)
@@ -93,7 +94,7 @@ fun Uri.zipFiles(files: List<File>, @IntRange(from = -1, to = 9) compression: In
 
 @WorkerThread
 fun Uri.zipUris(uris: List<Uri>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
-    mainContext.contentResolver.openFileDescriptor(this, MODE_WRITE).use { descriptor ->
+    mainContext.contentResolver.openFileDescriptor(this, MODE_REWRITE).use { descriptor ->
         descriptor?.fileDescriptor?.let {
             ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{zipStream ->
                 zipStream.setLevel(compression)}.use { outStream ->
@@ -105,7 +106,7 @@ fun Uri.zipUris(uris: List<Uri>, @IntRange(from = -1, to = 9) compression: Int =
 
 @WorkerThread
 fun Context.zipFiles(zipFile: Uri, files: List<File>, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
-    contentResolver.openFileDescriptor(zipFile, MODE_WRITE).use { descriptor ->
+    contentResolver.openFileDescriptor(zipFile, MODE_REWRITE).use { descriptor ->
         descriptor?.fileDescriptor?.let {
             ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{stream ->
                 stream.setLevel(compression)}.use { outStream ->
