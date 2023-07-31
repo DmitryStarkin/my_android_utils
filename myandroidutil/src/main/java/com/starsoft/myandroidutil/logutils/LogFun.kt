@@ -83,7 +83,7 @@ fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Thro
         return
     }
     try{
-        if(logFile.exists()){
+        if(file.exists()){
             file.delete()
         }
         file.createNewFile()
@@ -138,7 +138,7 @@ fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arr
 
 @Deprecated(
     message = "Use sendLogToEmails() instead",
-    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+    replaceWith = ReplaceWith("sendLogToEmails()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
 )
 @MainThread
 @JvmOverloads
@@ -170,7 +170,7 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
 
 @Deprecated(
     message = "Use sendLogToEmails() instead",
-    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+    replaceWith = ReplaceWith("sendLogToEmails()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
 )
 @MainThread
 @JvmOverloads
