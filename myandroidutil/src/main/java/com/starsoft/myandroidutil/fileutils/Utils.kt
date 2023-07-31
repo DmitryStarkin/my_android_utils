@@ -138,6 +138,21 @@ fun File.addFileFromStream(inputStream: InputStream, filename: String, overwrite
         }
     }
 
+@WorkerThread
+fun File.writeFromStream(inputStream: InputStream): File =
+    if(this.isDirectory){
+        throw Exception("must be an file")
+    } else if(!this.exists()){
+        throw Exception("no such file")
+    } else {
+        inputStream.use {
+            FileOutputStream(this).use { output ->
+                it.copyTo(output)
+                output.flush()
+            }
+            this
+        }
+    }
 
 @WorkerThread
 fun DIRECTORY.addTextFile(data: String, filename: String, overwrite: Boolean = true): File =

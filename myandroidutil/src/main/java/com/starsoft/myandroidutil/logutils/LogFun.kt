@@ -20,14 +20,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import androidx.annotation.MainThread
 import androidx.core.content.FileProvider
+import androidx.core.content.FileProvider.getUriForFile
 import com.starsoft.myandroidutil.fileutils.DIRECTORY
 import com.starsoft.myandroidutil.fileutils.FileSaver
 import com.starsoft.myandroidutil.fileutils.getMyCacheDir
+import com.starsoft.myandroidutil.fileutils.writeFromStream
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 import com.starsoft.myandroidutil.uimessageutils.makeLongToast
+import com.starsoft.simpleandroidasynclibrary.core.launch
+import com.starsoft.simpleandroidasynclibrary.executors.newSingleThreadPool
+import com.starsoft.simpleandroidasynclibrary.executors.preinstal.base.threadpools.SingleThreadPool
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -41,6 +47,8 @@ private const val FILE_NAME = "Log"
 private const val SEND_FILE_NAME = "LogToSend.txt"
 private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
 private val APPLICATION_ID get() = ContextProvider.context.getBuildConfigValue("APPLICATION_ID") as String? ?: ContextProvider.context.packageName.toString()
+
+private val executor: SingleThreadPool by lazy { newSingleThreadPool() }
 
 fun Context.getLogFile(): File {
     return File(this.getMyCacheDir(DIRECTORY.CACHE_LOGS), FILE_NAME + FILE_EXTENSIONS)
@@ -66,9 +74,66 @@ fun generateLogFile(): File {
     return mainContext.generateLogFile()
 }
 
+@MainThread
+@JvmOverloads
+fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Throwable) -> Unit)? = null){
+    val logFile = this.getLogFile()
+    if (file.exists()) {
+        LogWriter.blockLog = true
+        LogWriter.reset()
+        executor.launch({ f ->
+            if(file.delete()){
+                LogWriter.blockLog = false
+                LogWriter.reWriteCaption()
+            } else {
+                LogWriter.blockLog = false
+            }
+            onSusses(f)
+            f.deleteOnExit()
+                        },
+            { e ->
+            LogWriter.blockLog = false
+            LogWriter.writeLogMessage("Log error $e")
+            onError?.invoke(e) ?: throw (e) })
+        {
+            file.writeFromStream(FileInputStream(logFile))
+        }
+    } else {
+        onSusses(null)
+    }
+}
+
+@MainThread
+@JvmOverloads
+fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com"))  {
+    val file = this.getLogFile()
+    if (file.exists() && perform) {
+        LogWriter.writeLogMessage("Log send",
+            {
+                LogWriter.blockLog = true
+                LogWriter.reset()
+                val fileToSend = File(getMyCacheDir(DIRECTORY.CACHE_LOGS), SEND_FILE_NAME)
+                saveLogToFile(fileToSend, {file ->
+                    file?.apply {
+                        sendFileToEmail(eMails, this)
+                    }
+                },{e ->
+                    LogWriter.blockLog = false
+                    LogWriter.writeLogMessage("Log send error $e")
+                    e.printStackTrace()
+                })
+            }
+        )
+    }
+}
+
+@Deprecated(
+    message = "Use sendLogToEmails() instead",
+    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+)
+@MainThread
 @JvmOverloads
 fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
-
     val file = this.getLogFile()
     if (file.exists() && perform) {
         LogWriter.writeLogMessage("Log send",
@@ -94,11 +159,21 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
     }
 }
 
+@Deprecated(
+    message = "Use sendLogToEmails() instead",
+    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+)
+@MainThread
 @JvmOverloads
 fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
     mainContext.sendLog(perform, eMails)
 }
 
+@MainThread
+@JvmOverloads
+fun sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
+    mainContext.sendLogToEmails(perform, eMails)
+}
 
 @JvmOverloads
 fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
@@ -106,10 +181,10 @@ fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.c
     if (fileToSend.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
         val contentUri: Uri = try {
-             FileProvider.getUriForFile(this, "$APPLICATION_ID.fileprovider", fileToSend)
+             getUriForFile(this, "$APPLICATION_ID.fileprovider", fileToSend)
         } catch (e :Throwable){
             e.printStackTrace()
-            this.makeLongToast("Unknown error")
+            this.makeLongToast("no permissions to access to the file")
             return
         }
         val intent = Intent()
