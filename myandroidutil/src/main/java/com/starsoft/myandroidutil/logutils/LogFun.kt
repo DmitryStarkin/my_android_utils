@@ -82,18 +82,26 @@ fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Thro
         onSusses(null)
         return
     }
-    file.createNewFile()
+    try{
+        if(logFile.exists()){
+            file.delete()
+        }
+        file.createNewFile()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        onError?.invoke(e)
+        return
+    }
     LogWriter.blockLog = true
     LogWriter.reset()
     executor.launch({ f ->
-        if(file.delete()){
+        if(logFile.delete()){
             LogWriter.blockLog = false
             LogWriter.reWriteCaption()
         } else {
             LogWriter.blockLog = false
         }
-        onSusses(f)
-        f.deleteOnExit() },
+        onSusses(f) },
         { e ->
             LogWriter.blockLog = false
             LogWriter.writeLogMessage("Log error $e")
