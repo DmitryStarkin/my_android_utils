@@ -82,18 +82,26 @@ fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Thro
         onSusses(null)
         return
     }
-    file.createNewFile()
+    try{
+        if(file.exists()){
+            file.delete()
+        }
+        file.createNewFile()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        onError?.invoke(e)
+        return
+    }
     LogWriter.blockLog = true
     LogWriter.reset()
     executor.launch({ f ->
-        if(file.delete()){
+        if(logFile.delete()){
             LogWriter.blockLog = false
             LogWriter.reWriteCaption()
         } else {
             LogWriter.blockLog = false
         }
-        onSusses(f)
-        f.deleteOnExit() },
+        onSusses(f) },
         { e ->
             LogWriter.blockLog = false
             LogWriter.writeLogMessage("Log error $e")
@@ -130,7 +138,7 @@ fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arr
 
 @Deprecated(
     message = "Use sendLogToEmails() instead",
-    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+    replaceWith = ReplaceWith("sendLogToEmails()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
 )
 @MainThread
 @JvmOverloads
@@ -162,7 +170,7 @@ fun Context.sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
 
 @Deprecated(
     message = "Use sendLogToEmails() instead",
-    replaceWith = ReplaceWith("isKeyboardVisible()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
+    replaceWith = ReplaceWith("sendLogToEmails()", "com.starsoft.myandroidutil.logutils.sendLogToEmails()")
 )
 @MainThread
 @JvmOverloads
