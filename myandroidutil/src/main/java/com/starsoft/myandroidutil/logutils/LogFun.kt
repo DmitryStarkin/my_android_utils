@@ -78,29 +78,30 @@ fun generateLogFile(): File {
 @JvmOverloads
 fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Throwable) -> Unit)? = null){
     val logFile = this.getLogFile()
-    if (file.exists()) {
-        LogWriter.blockLog = true
-        LogWriter.reset()
-        executor.launch({ f ->
-            if(file.delete()){
-                LogWriter.blockLog = false
-                LogWriter.reWriteCaption()
-            } else {
-                LogWriter.blockLog = false
-            }
-            onSusses(f)
-            f.deleteOnExit()
-                        },
-            { e ->
+    if (!logFile.exists()){
+        onSusses(null)
+        return
+    }
+    file.createNewFile()
+    LogWriter.blockLog = true
+    LogWriter.reset()
+    executor.launch({ f ->
+        if(file.delete()){
+            LogWriter.blockLog = false
+            LogWriter.reWriteCaption()
+        } else {
+            LogWriter.blockLog = false
+        }
+        onSusses(f)
+        f.deleteOnExit() },
+        { e ->
             LogWriter.blockLog = false
             LogWriter.writeLogMessage("Log error $e")
             onError?.invoke(e) ?: throw (e) })
         {
             file.writeFromStream(FileInputStream(logFile))
         }
-    } else {
-        onSusses(null)
-    }
+
 }
 
 @MainThread
