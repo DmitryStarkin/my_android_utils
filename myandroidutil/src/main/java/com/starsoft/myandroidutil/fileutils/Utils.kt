@@ -15,10 +15,12 @@
 package com.starsoft.myandroidutil.fileutils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Environment
 import androidx.annotation.WorkerThread
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.sharingUtils.writeImage
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -126,7 +128,10 @@ fun File.addFileFromStream(inputStream: InputStream, filename: String, overwrite
         inputStream.use {
             val file = File(this, filename)
             if (file.exists() && !overwrite) {
-                return file
+                throw Exception("File exists")
+            } else if(file.exists()){
+                file.delete()
+                file.createNewFile()
             } else {
                 file.createNewFile()
             }
@@ -165,7 +170,11 @@ fun File.addTextFile(data: String, filename: String, overwrite: Boolean = true):
     } else {
         val file = File(this, filename)
         if (file.exists() && !overwrite) {
-             file
+            throw Exception("File exists")
+        }  else if(file.exists()){
+            file.delete()
+            file.createNewFile()
+            file.writeString(data)
         } else {
             file.createNewFile()
             file.writeString(data)
@@ -190,6 +199,32 @@ fun File.readAsText(): String =
             e.printStackTrace()
             EMPTY_STRING
         }
+
+@WorkerThread
+fun DIRECTORY.addImageFile(image: Bitmap, filename: String, overwrite: Boolean = true): File =
+    mainContext.getMyCacheDir(this).writeImage(image, filename, overwrite)
+
+@WorkerThread
+fun File.writeImage(
+    image: Bitmap,
+    filename: String,
+    overwrite: Boolean = false
+): File =  if(!this.isDirectory){
+                throw Exception("must be an directory")
+            } else {
+                File(this, filename).also { file ->
+                    if(file.exists() && overwrite){
+                        file.delete()
+                        file.createNewFile()
+                        FileOutputStream(file).writeImage(image)
+
+                    } else if(!file.exists()) {
+                        file.createNewFile()
+                        FileOutputStream(file).writeImage(image)
+                }
+            }
+        }
+
 
 
 

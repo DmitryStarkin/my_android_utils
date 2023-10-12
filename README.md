@@ -7,7 +7,7 @@ the library is not intended for distribution, you can use it at your own risk
 
 ## Current Version:
 
-0.15.6b
+0.16.0b
 
 ## Installation:
 
@@ -19,6 +19,18 @@ repositories {
         maven { url "https://jitpack.io" }
         }
    }
+```
+
+or in setting.gradle add:
+
+```
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+    ......
+    maven { url 'https://jitpack.io' }
+    }
+}
 ```
 
 2 in module level build.gradle add:

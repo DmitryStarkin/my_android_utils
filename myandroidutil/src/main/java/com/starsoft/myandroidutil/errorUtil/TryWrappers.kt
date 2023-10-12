@@ -42,3 +42,11 @@ fun <T, V> T.runSafe(ifError:T.(Throwable) -> V, lambda: T.() -> V): V =
         e.printStackTrace()
         this.ifError(e)
     }
+
+fun <T> getSafeOrNull(lambda: () -> T): T? =
+    try {
+        lambda.invoke()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        null
+    }

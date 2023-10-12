@@ -23,6 +23,7 @@ import android.view.Display
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import com.starsoft.myandroidutil.providers.mainContext
 
 
 /**
@@ -97,8 +98,30 @@ fun Context.getDisplaySizeInPixels(): Point {
     }
 }
 
+const val BASE_DPI = 160f
 
-fun Context.getDisplayDensity(): Int {
-    val  metrics = resources.displayMetrics
-    return metrics.densityDpi
-}
+const val MM_IN_INCH = 25.4f
+
+fun Context.convertDpToPixel(dp: Float): Float = (dp / BASE_DPI) * getAverageDisplayPxPerInch()
+
+fun Context.getHorizontalDisplayPxPerInch(): Float = resources.displayMetrics.xdpi
+
+fun Context.getVerticalDisplayPxPerInch(): Float = resources.displayMetrics.ydpi
+
+fun Context.getAverageDisplayPxPerInch(): Float = (getHorizontalDisplayPxPerInch() + getVerticalDisplayPxPerInch()) / 2f
+
+fun convertDpToPixel(dp: Float): Float = (dp / BASE_DPI) * averageDisplayPxPerInch
+
+val displayHorizontalPxPerInch: Float get() = mainContext.getHorizontalDisplayPxPerInch()
+
+val displayVerticalPxPerInch: Float get() = mainContext.getVerticalDisplayPxPerInch()
+
+val displayVerticalPxPerMM: Float get() = displayVerticalPxPerInch/MM_IN_INCH
+
+val displayHorizontalPxPerMM: Float get() =  displayHorizontalPxPerInch/MM_IN_INCH
+
+val averageDisplayPxPerInch: Float get() = (displayVerticalPxPerInch + displayHorizontalPxPerInch) / 2f
+
+val averageDisplayPxPerMM: Float get() = averageDisplayPxPerInch/MM_IN_INCH
+
+fun Context.getDisplayDpiDensity(): Int = resources.displayMetrics.densityDpi

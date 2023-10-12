@@ -22,6 +22,7 @@ import androidx.annotation.IntRange
 import com.starsoft.myandroidutil.collectionUtils.groupByDescending
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import com.starsoft.myandroidutil.stringext.SPACE
+import java.util.Random
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -44,6 +45,26 @@ const val DEFAULT_BLUE_BRIGH_WEIGHT = 0.0722f
 const val RED_WEIGHT = 30
 const val GREEN_WEIGHT = 59
 const val BLUE_WEIGHT = 11
+
+private val random: Random by lazy {
+    Random(System.currentTimeMillis())
+}
+
+private val randomA: Random by lazy {
+    Random(System.currentTimeMillis())
+}
+
+private val randomR: Random by lazy {
+    Random(System.currentTimeMillis())
+}
+
+private val randomG: Random by lazy {
+    Random(System.currentTimeMillis())
+}
+
+private val randomB: Random by lazy {
+    Random(System.currentTimeMillis())
+}
 
 sealed interface ColorComponent: ColorContainer {
     @get:IntRange(from = 0, to = 255)
@@ -212,12 +233,65 @@ data class ColorComponentsContainer(
     override val color: Int = argb(a, r, g, b)
 }
 
+fun getRandomARGBColor(exclude: Iterable<ColorContainer> = emptyList(), comparator: ColorComparator = simpleColorComparator): ColorContainer{
+    val newColor = ColorIntContainer(-random.nextInt(16777216)).also {
+        it.setAlpha(randomA.nextInt(256))
+    }
+    return if(exclude.isContainsColor(newColor, comparator)){
+        getRandomARGBColor(exclude, comparator)
+    } else {
+        newColor
+    }
+}
+
+fun getRandomRGBColorAlt(exclude: Iterable<ColorContainer> = emptyList(), comparator: ColorComparator = simpleColorComparator): ColorContainer{
+    val newColor = ColorComponentsContainer(randomR.nextInt(256), randomG.nextInt(256), randomB.nextInt(256))
+    return if(exclude.isContainsColor(newColor, comparator)){
+        getRandomRGBColorAlt(exclude, comparator)
+    } else {
+        newColor
+    }
+}
+
+fun getRandomARGBColorAlt(exclude: Iterable<ColorContainer> = emptyList(), comparator: ColorComparator = simpleColorComparator): ColorContainer{
+    val newColor = ColorComponentsContainer(randomR.nextInt(256), randomG.nextInt(256), randomB.nextInt(256), randomA.nextInt(256))
+    return if(exclude.isContainsColor(newColor, comparator)){
+        getRandomRGBColorAlt(exclude, comparator)
+    } else {
+        newColor
+    }
+}
+
+fun getRandomRGBColor(exclude: Iterable<ColorContainer> = emptyList(), comparator: ColorComparator = simpleColorComparator): ColorContainer{
+    val component = random.nextInt(16777216)
+    if(component == 0){
+        return  getRandomRGBColor(exclude, comparator)
+    }
+    val newColor = ColorIntContainer(-component)
+    return if(exclude.isContainsColor(newColor, comparator)){
+        getRandomRGBColor(exclude, comparator)
+    } else {
+        newColor
+    }
+}
+
+fun Iterable<ColorContainer>.isContainsColor(color: ColorContainer, comparator: ColorComparator = simpleColorComparator): Boolean =
+    find {
+        comparator.compare(it, color)
+    }?.let{true} ?: false
+
 interface ColorComparator {
     fun compare(@ColorInt c1: Int, @ColorInt c2: Int): Boolean =
         compare(ColorIntContainer(c1), ColorIntContainer(c2))
 
+    fun compare(@ColorInt c1: Int, c2: ColorContainer): Boolean =
+        compare(ColorIntContainer(c1), c2)
+
     fun compare(c1: ColorContainer, c2: ColorContainer): Boolean
 }
+
+fun simpleCompare(@ColorInt c1: Int, c2: ColorContainer): Boolean =
+    c1 == c2.color
 
 val simpleColorComparator: ColorComparator by lazy {
     object : ColorComparator {
@@ -395,6 +469,34 @@ fun setColorAlpha(@ColorInt color: Int, alpha: Int): Int =
         color
     } else {
         Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
+    }
+
+fun ColorContainer.setAlpha(alpha: Int): ColorContainer =
+    if (alpha < MIN_COLOR_COMPONENT_VALUE || alpha > MAX_COLOR_COMPONENT_VALUE) {
+        this
+    } else {
+        ColorComponentsContainer(r, g, b, alpha)
+    }
+
+fun ColorContainer.setRed(red: Int): ColorContainer =
+    if (red < MIN_COLOR_COMPONENT_VALUE || red > MAX_COLOR_COMPONENT_VALUE) {
+        this
+    } else {
+        ColorComponentsContainer(red, g, b, a)
+    }
+
+fun ColorContainer.setGreen(green: Int): ColorContainer =
+    if (green < MIN_COLOR_COMPONENT_VALUE || green > MAX_COLOR_COMPONENT_VALUE) {
+        this
+    } else {
+        ColorComponentsContainer(r, green, b, a)
+    }
+
+fun ColorContainer.setBlue(blue: Int): ColorContainer =
+    if (blue < MIN_COLOR_COMPONENT_VALUE || blue > MAX_COLOR_COMPONENT_VALUE) {
+        this
+    } else {
+        ColorComponentsContainer(r, g, blue, a)
     }
 
 @ColorInt
