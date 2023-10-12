@@ -21,6 +21,18 @@ repositories {
    }
 ```
 
+or in setting.gradle add:
+
+```
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+    ......
+    maven { url 'https://jitpack.io' }
+    }
+}
+```
+
 2 in module level build.gradle add:
 ```
 dependencies {
