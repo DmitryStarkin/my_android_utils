@@ -22,6 +22,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import androidx.annotation.AnimRes
 import androidx.annotation.AnimatorRes
@@ -373,7 +374,23 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
                         )
                     )
                 }
+            } ?: run{
+                Log.d("test", "component null ")
+                activity.startActivity(
+                        Intent.createChooser(
+                            intent,
+                            activity.getString(chooserTextId)
+                        )
+                    )
             }
+        } ?: run{
+            Log.d("test", "component null ")
+            activity?.startActivity(
+                Intent.createChooser(
+                    intent,
+                    activity.getString(chooserTextId)
+                )
+            )
         }
     }
 
