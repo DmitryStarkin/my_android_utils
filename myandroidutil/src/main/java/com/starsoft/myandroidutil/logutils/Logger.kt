@@ -36,18 +36,22 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
     }
 
 
+    internal var appCommonTag: String? = null
+
+    private val visibleTag: String get() = appCommonTag ?: tag
+
     fun d(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (isDebug && perform) {
             var _msg = msg.invoke()
             t?.apply { Log.d(
-                    tag, _msg, this
+                visibleTag, _msg, this
                 )
             } ?: Log.d(
-                tag, _msg
+                visibleTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("d - $tag $_msg")
+                LogWriter.writeLogMessage("d - $visibleTag $_msg")
             }
         }
     }
@@ -61,14 +65,14 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
         if (perform) {
             var _msg = msg.invoke()
             t?.apply { Log.i(
-                tag, _msg, this
+                visibleTag, _msg, this
             )
             } ?: Log.i(
-                tag, _msg
+                visibleTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("i - $tag $_msg")
+                LogWriter.writeLogMessage("i - $visibleTag $_msg")
             }
         }
     }
@@ -83,14 +87,14 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
         if (perform) {
             var _msg = msg.invoke()
             t?.apply { Log.w(
-                tag, _msg, this
+                visibleTag, _msg, this
             )
             } ?: Log.w(
-                tag, _msg
+                visibleTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("w - $tag $_msg")
+                LogWriter.writeLogMessage("w - $visibleTag $_msg")
             }
         }
     }
@@ -104,14 +108,14 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
         if (perform) {
             var _msg = msg.invoke()
             t?.apply { Log.e(
-                tag, _msg, this
+                visibleTag, _msg, this
             )
             } ?: Log.e(
-                tag, _msg
+                visibleTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("e - $tag $_msg")
+                LogWriter.writeLogMessage("e - $visibleTag $_msg")
             }
         }
     }
@@ -125,14 +129,14 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
         if (perform) {
             var _msg = msg.invoke()
             t?.apply { Log.v(
-                tag, _msg, this
+                visibleTag, _msg, this
             )
             } ?: Log.v(
-                tag, _msg
+                visibleTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("v - $tag $_msg")
+                LogWriter.writeLogMessage("v - $visibleTag $_msg")
             }
         }
     }

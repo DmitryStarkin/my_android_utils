@@ -29,6 +29,18 @@ private const val M_NAME = "com.starsoft.myandroidutil.logutils.Log"
 
 private val lock = ReentrantLock()
 
+fun setCommonTag(tag: String){
+    if(tag.isNotEmpty()){
+        mainLogger.appCommonTag = tag
+    } else {
+        throw Exception("empty tag")
+    }
+}
+
+fun resetTag(){
+        mainLogger.appCommonTag = null
+}
+
 @JvmOverloads
 fun d(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
