@@ -19,6 +19,7 @@ package com.starsoft.myandroidutil.uimessageutils
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Typeface
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -162,3 +163,23 @@ fun Snackbar.applyErrorStyle(): Snackbar = this.also {
         it.compoundDrawablePadding = 10
     }
 }
+
+/**
+ * set Typeface to [Snackbar]
+ */
+fun Snackbar.setTypeface(face: Typeface): Snackbar =
+    (view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView).let{
+        it.typeface = face
+        this
+    }
+
+/**
+ * set Typeface to [Snackbar]
+ */
+fun Snackbar.setMaxLines(lines: Int?): Snackbar =
+    (view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView).let{textView->
+        lines?.let{
+            textView.maxLines = it
+        }
+        this
+    }
