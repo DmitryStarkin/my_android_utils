@@ -46,16 +46,20 @@ fun <T> List<T>.removeLast(): List<T> =
     if(isEmpty()){
         this
     } else {
-        (this as MutableList<T>).removeAt(this.lastIndex)
-        this
+        ArrayList<T>().also {
+            it.addAll(this)
+            it.removeAt(it.lastIndex)
+        }
     }
 
 fun <T> List<T>.removeFirst(): List<T> =
     if(isEmpty()){
         this
     } else {
-        (this as MutableList<T>).removeAt(0)
-        this
+        ArrayList<T>().also {
+            it.addAll(this)
+            it.removeAt(0)
+        }
     }
 
 fun <T> List<T>.remove(item: T): List<T> =
@@ -69,22 +73,20 @@ fun <T> List<T>.remove(item: T): List<T> =
         newList
     }
 
-fun <T> List<T>.add(item: T) : List<T>  = if(this.isNotEmpty()){
-    (this as MutableList<T>).add(item)
-    this
-} else {
-    ArrayList<T>().also {
-        it.add(item)
-    }.toList()
+fun <T> List<T>.add(item: T) : List<T>  = ArrayList<T>().also {
+    it.addAll(this)
+    it.add(item)
 }
 
-fun <T> List<T>.addToFront(item: T): List<T>  = if(this.isNotEmpty()){
-    (this as MutableList<T>).add(0, item)
-    this
-} else {
-    ArrayList<T>().also {
-        it.add(item)
-    }.toList()
+fun <T> List<T>.addAll(items: List<T>) : List<T>  = ArrayList<T>().also {
+    it.addAll(this)
+    it.addAll(items)
+}
+
+
+fun <T> List<T>.addToFront(item: T): List<T>  = ArrayList<T>().also {
+    it.add(item)
+    it.addAll(this)
 }
 
 fun <T> Iterable<T>.removeAdjacent(): List<T> {

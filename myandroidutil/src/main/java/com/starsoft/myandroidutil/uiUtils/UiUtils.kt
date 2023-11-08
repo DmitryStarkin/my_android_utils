@@ -17,23 +17,31 @@ package com.starsoft.myandroidutil.uiUtils
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.os.Build
 import android.os.IBinder
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
+import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.shimmer.Shimmer
 import kotlin.random.Random
 import com.starsoft.myandroidutil.shimmer.ShimmerDrawable
+import com.starsoft.myandroidutil.stringext.applyStyleSpan
 
 /**
  * Created by Dmitry Starkin on 08.05.2021 14:01.
@@ -235,3 +243,35 @@ fun Context.getPrimaryColor(): Int {
     theme.resolveAttribute(R.attr.colorPrimary, typedValue, true)
     return typedValue.data
 }
+
+fun RadioGroup.setTypefacesDependChecked(@IntRange(from = 0, to = Typeface.BOLD_ITALIC.toLong()) checkedFace: Int, @IntRange(from = 0, to = Typeface.BOLD_ITALIC.toLong()) unCheckedFace: Int){
+    children.toList().forEach {
+        if(it is AppCompatRadioButton){
+            if(it.id == checkedRadioButtonId){
+                it.text = it.text?.applyStyleSpan(StyleSpan(checkedFace))
+            } else {
+                it.text = it.text.applyStyleSpan(StyleSpan(unCheckedFace))
+            }
+        }
+    }
+    invalidate()
+}
+
+fun RadioGroup.setTypefacesDependChecked(checkedFace: Typeface, unCheckedFace: Typeface){
+    children.toList().forEach {
+        if(it is AppCompatRadioButton){
+            if(it.id == checkedRadioButtonId){
+                it.typeface = checkedFace
+            } else {
+                it.typeface = unCheckedFace
+            }
+        }
+    }
+    invalidate()
+}
+
+fun RadioGroup.getCheckedButton(): RadioButton? =
+    children.toList().find {
+        it is RadioButton && it.id == checkedRadioButtonId
+
+    } as RadioButton?

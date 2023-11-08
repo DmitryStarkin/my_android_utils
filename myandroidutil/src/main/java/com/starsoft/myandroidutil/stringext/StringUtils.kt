@@ -29,6 +29,7 @@ import android.text.style.URLSpan
 import android.widget.TextView
 import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
+import androidx.core.text.clearSpans
 import androidx.core.text.toSpannable
 import com.starsoft.myandroidutil.providers.mainContext
 import java.math.RoundingMode
@@ -88,6 +89,13 @@ fun CharSequence.convertMatchesToUrlLink(regexString: String, url: String): Span
 fun TextView.applyStyleSpanToMatches(regexString: String, span: StyleSpan){
     this.text = this.text.toString().applyStyleSpanToMatches(regexString, span)
 }
+
+fun CharSequence.applyStyleSpan( span: Any): Spannable =
+    SpannableString.valueOf(this).let{
+        it.clearSpans()
+        it.setSpan(span, 0, it.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        it
+    }
 
 fun String.boldMatches(regexString: String): Spannable =
     this.applyStyleSpanToMatches(regexString, BOLD_SPAN)
