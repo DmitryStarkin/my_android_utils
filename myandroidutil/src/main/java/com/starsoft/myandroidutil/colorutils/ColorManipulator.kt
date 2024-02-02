@@ -25,6 +25,17 @@ import kotlin.math.abs
  * Created by Dmitry Starkin on 26.03.2023 12:49.
  */
 
+/**
+ * val bitmap
+ *      val transformedBitmap = bitmap.copy(bitmap.config, true)
+ *      .applyTransformations {
+ *          createTransformations()
+ *          //add transformations here for example
+ *          .toBWNegative()
+ *          .simplyCastToPaletteByShadow(KeynoaColors.values().toList(), defWeightShadowSelector)
+ *      }
+ */
+
 private const val BACKGROUND_DELTA = 200f
 private const val REPLACE_DELTA = 5
 
