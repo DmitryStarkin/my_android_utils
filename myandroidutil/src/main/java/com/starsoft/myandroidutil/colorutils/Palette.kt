@@ -14,6 +14,8 @@
 
 package com.starsoft.myandroidutil.colorutils
 
+import android.graphics.Color
+
 
 /**
  * Created by Dmitry Starkin on 26.03.2023 12:47.
@@ -73,10 +75,10 @@ val blueGreenColor: ColorContainer by lazy {
 
 val transparentColor: ColorContainer by lazy {
     ColorComponentsContainer(
-        MIN_COLOR_COMPONENT_VALUE,
-        MIN_COLOR_COMPONENT_VALUE,
-        MIN_COLOR_COMPONENT_VALUE,
-        MIN_COLOR_COMPONENT_VALUE
+        Color.red(Color.TRANSPARENT),
+        Color.green(Color.TRANSPARENT),
+        Color.blue(Color.TRANSPARENT),
+        Color.alpha(Color.TRANSPARENT)
     )
 }
 

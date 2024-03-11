@@ -21,7 +21,6 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.annotation.MainThread
-import androidx.core.content.FileProvider
 import androidx.core.content.FileProvider.getUriForFile
 import com.starsoft.myandroidutil.fileutils.DIRECTORY
 import com.starsoft.myandroidutil.fileutils.FileSaver
@@ -46,7 +45,7 @@ private const val FILE_EXTENSIONS = ".txt"
 private const val FILE_NAME = "Log"
 private const val SEND_FILE_NAME = "LogToSend.txt"
 private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
-private val APPLICATION_ID get() = ContextProvider.context.getBuildConfigValue("APPLICATION_ID") as String? ?: ContextProvider.context.packageName.toString()
+private val APPLICATION_ID get() = ContextProvider.context.packageName.toString()
 
 private val executor: SingleThreadPool by lazy { newSingleThreadPool() }
 
