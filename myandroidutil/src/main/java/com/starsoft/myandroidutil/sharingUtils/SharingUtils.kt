@@ -119,10 +119,13 @@ fun Context.getCompressedImageFile(image: Bitmap?, quality: Int, filePrefix: Str
 @WorkerThread
 fun OutputStream.writeImage(
     image: Bitmap, format: Bitmap.CompressFormat = DEFAULT_IMAGE_FORMAT,
-    quality: Int = FULL_QUALITY
+    quality: Int = FULL_QUALITY, recycleAfter: Boolean = true
 ) {
     this@writeImage.use { out ->
         image.compress(format, quality, out)
+        if(recycleAfter){
+            image.recycle()
+        }
         out.flush()
     }
 }
