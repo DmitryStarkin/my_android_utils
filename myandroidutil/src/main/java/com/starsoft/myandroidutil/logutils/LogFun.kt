@@ -113,7 +113,7 @@ fun Context.saveLogToFile(file: File, onSusses: (File?) -> Unit, onError: ((Thro
 
 @MainThread
 @JvmOverloads
-fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com"))  {
+fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com"), sendError: (File) -> Unit = {})  {
     val file = this.getLogFile()
     if (file.exists() && perform) {
         LogWriter.writeLogMessage("Log send",
@@ -123,7 +123,9 @@ fun Context.sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arr
                 val fileToSend = File(getMyCacheDir(DIRECTORY.CACHE_LOGS), SEND_FILE_NAME)
                 saveLogToFile(fileToSend, {file ->
                     file?.apply {
-                        sendFileToEmail(eMails, this)
+                        if(!sendFileToEmail(eMails, this)){
+                            sendError.invoke(file)
+                        }
                     }
                 },{e ->
                     LogWriter.blockLog = false
@@ -184,7 +186,7 @@ fun sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0
 }
 
 @JvmOverloads
-fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File) {
+fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.com"), fileToSend: File): Boolean {
 
     if (fileToSend.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
@@ -193,7 +195,7 @@ fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.c
         } catch (e :Throwable){
             e.printStackTrace()
             this.makeLongToast("no permissions to access to the file")
-            return
+            return false
         }
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
@@ -213,11 +215,14 @@ fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.c
             val choicer = Intent.createChooser(intent, "Send log witch")
             choicer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             this.applicationContext.startActivity(choicer);
+            return true
         } else {
             this.makeLongToast("Impossible send this file")
+            return false
         }
     } else {
         this.makeLongToast("File not exists")
+        return false
     }
 }
 
