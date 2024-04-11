@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.core.content.FileProvider.getUriForFile
 import com.starsoft.myandroidutil.fileutils.DIRECTORY
@@ -45,7 +46,7 @@ private const val FILE_EXTENSIONS = ".txt"
 private const val FILE_NAME = "Log"
 private const val SEND_FILE_NAME = "LogToSend.txt"
 private const val TIME_STAMP_PATTERN = "yyyy-MM_dd_HH-mm-ss-SSS"
-private val APPLICATION_ID get() = ContextProvider.context.packageName.toString()
+private val APPLICATION_ID get() = ContextProvider.context.packageName
 
 private val executor: SingleThreadPool by lazy { newSingleThreadPool() }
 
@@ -181,8 +182,8 @@ fun sendLog(perform: Boolean = true, eMails: Array<String> = arrayOf("t050680308
 
 @MainThread
 @JvmOverloads
-fun sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com")) {
-    mainContext.sendLogToEmails(perform, eMails)
+fun sendLogToEmails(perform: Boolean = true, eMails: Array<String> = arrayOf("t0506803080@gmail.com"), sendError: (File) -> Unit = {}) {
+    mainContext.sendLogToEmails(perform, eMails, sendError)
 }
 
 @JvmOverloads
@@ -191,6 +192,7 @@ fun Context.sendFileToEmail(eMails: Array<String> = arrayOf("t0506803080@gmail.c
     if (fileToSend.exists()) {
         val time = SimpleDateFormat(TIME_STAMP_PATTERN, Locale.getDefault()).format(Date())
         val contentUri: Uri = try {
+            Log.d("Utils", "Current app $APPLICATION_ID.fileprovider")
              getUriForFile(this, "$APPLICATION_ID.fileprovider", fileToSend)
         } catch (e :Throwable){
             e.printStackTrace()
