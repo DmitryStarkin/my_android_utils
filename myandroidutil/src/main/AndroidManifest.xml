@@ -38,7 +38,8 @@
             tools:node="merge">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/file_paths"
+                tools:node="merge" />
         </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
