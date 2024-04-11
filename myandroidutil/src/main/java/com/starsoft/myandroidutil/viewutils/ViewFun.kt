@@ -37,7 +37,6 @@ import com.starsoft.myandroidutil.uiUtils.isKeyboardVisible
  * Created by Dmitry Starkin at 25.11.2020 13:00.
  */
 
-const val DEFAULT_ANIMATION_DELAY = 600L
 private const val REQUEST_LAYOUT_MAX_TIME = 5000L
 private const val REQUEST_LAYOUT_DELAY = 30L
 private const val REQUEST_LAYOUT_ATTEMPTS = (REQUEST_LAYOUT_MAX_TIME / REQUEST_LAYOUT_DELAY).toInt()
@@ -84,14 +83,6 @@ fun Activity.invokeAfterKeyboardOpened(attempt: Int = 0, lambda: () -> Unit) {
 }
 
 @JvmOverloads
-fun View.animation(transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
-    transition.duration = duration
-    transition.addTarget(this)
-    transition.apply { listener?.apply { addListener(this) } }
-    TransitionManager.beginDelayedTransition(this.parent as ViewGroup, transition)
-}
-
-@JvmOverloads
 @SuppressLint("RestrictedApi")
 fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
     val menuHelper = if(theme == null){
@@ -105,38 +96,3 @@ fun PopupMenu.showWitchHelper(anchor: View, theme: Int? = null){
     menuHelper.show()
 }
 
-@JvmOverloads
-fun View.changeVisibilityWithAnimation(visibility: VisibilityState, transition: Transition, listener: Transition.TransitionListener? = null, duration: Long = DEFAULT_ANIMATION_DELAY){
-    if(this.visibility != visibility.state) {
-        this.animation(transition, listener, duration)
-        this.visibility = visibility.state
-    }
-}
-
-enum class VisibilityState(val state: Int) {
-    GONE(View.GONE),
-    VISIBLE(View.VISIBLE),
-    INVISIBLE(View.INVISIBLE)
-}
-
-interface AnimationListener : Transition.TransitionListener {
-    override fun onTransitionStart(transition: Transition) {
-//        stub
-    }
-
-    override fun onTransitionEnd(transition: Transition) {
-        //        stub
-    }
-
-    override fun onTransitionCancel(transition: Transition) {
-        //        stub
-    }
-
-    override fun onTransitionPause(transition: Transition) {
-        //        stub
-    }
-
-    override fun onTransitionResume(transition: Transition) {
-        //        stub
-    }
-}
