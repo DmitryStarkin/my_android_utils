@@ -91,12 +91,12 @@ fun Context.getUriTypeAsExtension(uri: Uri): String {
     }
 }
 
-fun Context.getUriMMEType(uri: Uri, defaultMmePrefix: String): String {
+fun Context.getUriMMEType(uri: Uri, defaultMmeType: String = MME_TYPE_UNKNOWN): String {
     val mime = MimeTypeMap.getSingleton()
     return if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-        this.contentResolver.getType(uri) ?: "$defaultMmePrefix/*"
+        this.contentResolver.getType(uri) ?: defaultMmeType
     } else {
-        mime.getMimeTypeFromExtension(uri.getFile()?.name?.substringAfterLast("."))  ?: "$defaultMmePrefix/*"
+        mime.getMimeTypeFromExtension(uri.getFile()?.name?.substringAfterLast(".")) ?: defaultMmeType
     }
 }
 
