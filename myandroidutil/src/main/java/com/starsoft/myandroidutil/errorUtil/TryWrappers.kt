@@ -50,3 +50,11 @@ fun <T> getSafeOrNull(lambda: () -> T): T? =
         e.printStackTrace()
         null
     }
+
+fun <T, V> T.runSafeOrNull(lambda: T.() -> V): V? =
+    try {
+        this.lambda()
+    } catch (e: Throwable){
+        e.printStackTrace()
+        null
+    }

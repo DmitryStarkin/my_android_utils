@@ -24,6 +24,8 @@ fun Class<*>.isExtendInterface(type: Class<*>): Boolean {
         for (typeOfApi in this) {
             if (typeOfApi == type) {
                 return true
+            } else if(typeOfApi.isExtendInterface(type)){
+                return true
             }
         }
     }
@@ -52,5 +54,5 @@ fun Class<*>.getSuperClasses() :List<Class<*>> {
         superclass = superclass.superclass?.apply {this as Class<*> }
         superclass?.apply {classList.add(this)  }
     }
-    return classList;
+    return classList
 }
