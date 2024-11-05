@@ -26,6 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
+import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.UriUyils.getFileDataFromUri
 import com.starsoft.myandroidutil.fileutils.DIRECTORY
 import com.starsoft.myandroidutil.fileutils.getMyCacheDir
@@ -350,6 +351,22 @@ fun Context.sendMail(eMail: String, fields: EmailsField = EmailsField()) {
         }
     }
 }
+
+fun Context.checkEMail() {
+    val intent = Intent()
+    intent.action = Intent.ACTION_MAIN
+    intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+    val packageManager = this.applicationContext.packageManager
+    val matches: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
+
+    if (matches.isNotEmpty()) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val choicer = Intent.createChooser(intent, getString(R.string.check_email_choicer_message))
+        choicer.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        this.applicationContext.startActivity(choicer);
+    }
+}
+
 
 data class EmailsField(
     val choicerMessage: String = EMPTY_STRING,

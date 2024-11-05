@@ -41,4 +41,5 @@
     <string name="select_app_to_open_link">Select the app to open link</string>
     <string name="no_internet_error">Check Internet connection</string>
     <string name="server_time_out_error">The server is not responding. Check the connection and try again</string>
+    <string name="check_email_choicer_message">Check Email by</string>
 </resources>
