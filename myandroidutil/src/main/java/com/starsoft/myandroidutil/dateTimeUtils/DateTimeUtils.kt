@@ -18,6 +18,7 @@ import android.content.Context
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.text.DateFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -65,7 +66,12 @@ fun Context.getRelativeTimeString(timeIntervalMills: Long): String {
 
 fun String?.getDate(formatter: DateFormat): Date? =
     this?.let { timeString ->
-        formatter.parse(timeString)
+        try{
+            formatter.parse(timeString)
+        } catch (e: ParseException){
+            e.printStackTrace()
+            null
+        }
     }
 
 fun Date?.getRestDays(anchor: Long): Int =
