@@ -42,30 +42,30 @@ enum class DIRECTORY(val directoryName: String) {
     )
 }
 
-fun Context.getMyCacheDir(dir: DIRECTORY): File {
+fun Context.getMyCacheDir(dir: DIRECTORY, create: Boolean = true): File {
 
     val directory = File(this.cacheDir.toString() + dir.directoryName)
-    if (!directory.exists()) {
+    if (!directory.exists() && create) {
         directory.mkdirs()
     }
     return directory
 }
 
-fun Context.getMyCacheSubDir(dir: DIRECTORY, name: String): File =
+fun Context.getMyCacheSubDir(dir: DIRECTORY, name: String, create: Boolean = true): File =
 
     File(getMyCacheDir(dir), name).let {
-        if(!it.exists()){
+        if(!it.exists() && create){
             it.mkdirs()
         }
         it
     }
 
-fun File.getSubDir(name: String): File =
+fun File.getSubDir(name: String, create: Boolean = true): File =
     if(!this.isDirectory){
         throw Exception("must be an directory")
     } else {
         File(this, name).let {
-            if(!it.exists()){
+            if(!it.exists() && create){
                 it.mkdirs()
             }
             it
@@ -88,12 +88,12 @@ fun Context.deleteMyCacheDir(dir: DIRECTORY): Boolean{
     }
 }
 
-fun Context.getExtFilesDir(subdirName: String = EMPTY_STRING): File {
+fun Context.getExtFilesDir(subdirName: String = EMPTY_STRING, create: Boolean = true): File {
     val filePath: String =
       getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
             .toString() + "/" + subdirName
     return File(filePath).also {
-        if (!it.exists()) {
+        if (!it.exists() && create) {
             it.mkdir()
             it.setReadable(true)
         }
@@ -224,6 +224,38 @@ fun File.writeImage(
                 }
             }
         }
+
+fun File.findFile(fileName: String): File?{
+    if(fileName.isEmpty()) throw (Exception("Empty name"))
+    return collectDirectories().find {
+        File(it, fileName).exists()
+    }?.let{
+        File(it, fileName)
+    }
+}
+
+fun File.collectDirectories(includeThis: Boolean = true, result : ArrayList<File> = ArrayList<File>()): List<File> =
+    if(!this.isDirectory){
+        throw Exception("must be an directory")
+    } else {
+        if(includeThis){
+            result.add(this)
+        }
+
+        listFiles()?.forEach {
+            if(it.isDirectory){
+                it.collectDirectories(result = result)
+            }
+        }
+        result
+    }
+
+
+fun File.ifExistsCopyTo(dest: File, owerWrite: Boolean = false) {
+    if(exists()){
+        copyTo(dest, owerWrite)
+    }
+}
 
 
 

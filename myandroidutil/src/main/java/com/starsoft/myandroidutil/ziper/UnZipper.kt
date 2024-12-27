@@ -22,6 +22,7 @@ import com.starsoft.myandroidutil.fileutils.addFileFromStream
 import com.starsoft.myandroidutil.fileutils.getMyCacheDir
 import com.starsoft.myandroidutil.fileutils.getSubDir
 import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -51,12 +52,21 @@ fun File.unZipToDir(dir: File){
     if(!dir.isDirectory){
         throw Exception("must be an directory")
     } else {
-        ZipFile(this).use {zipFile ->
+        val dirs = ArrayList<String>()
+        ZipFile(this).use { zipFile ->
             val zippedFiles = ArrayList<ZipEntry>()
             zipFile.entries().iterator().forEach { entry ->
                 if (entry.isDirectory) {
-                    dir.getSubDir(entry.name)
+                    if(entry.name !in dirs){
+                        dir.getSubDir(entry.name)
+                        dirs.add(entry.name)
+                    }
                 } else {
+                    val entryDir = entry.name.substringBeforeLast(SEPARATOR, EMPTY_STRING)
+                    if(entryDir.isNotEmpty() && entryDir !in dirs){
+                        dir.getSubDir(entry.name)
+                        dirs.add(entry.name)
+                    }
                     zippedFiles.add(entry)
                 }
             }
