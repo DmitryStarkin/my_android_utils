@@ -73,6 +73,17 @@ fun <T> List<T>.remove(item: T): List<T> =
         newList
     }
 
+fun <T> List<T>.moveToFront(item: T): List<T> =
+    if(isEmpty() || !contains(item)){
+        this
+    } else {
+         ArrayList<T>().also {
+            it.addAll(this)
+            it.remove(item)
+            it.addToFront(item)
+        }.toList()
+    }
+
 fun <T> List<T>.add(item: T) : List<T>  = ArrayList<T>().also {
     it.addAll(this)
     it.add(item)
