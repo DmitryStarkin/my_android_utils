@@ -22,6 +22,7 @@ import com.starsoft.myandroidutil.UriUyils.getFileNameFromUri
 import com.starsoft.myandroidutil.fileutils.DIRECTORY
 import com.starsoft.myandroidutil.fileutils.getMyCacheDir
 import com.starsoft.myandroidutil.providers.mainContext
+import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -35,6 +36,7 @@ import java.util.zip.ZipOutputStream
  * Created by Dmitry Starkin on 12.06.2023 11:08.
  */
 
+internal const val SEPARATOR = "/"
 private const val MODE_WRITE = "w"
 private const val MODE_REWRITE = "rwt"
 private const val MODE_READ = "r"
@@ -54,7 +56,7 @@ fun File.zipDir(dir: File, @IntRange(from = -1, to = 9) compression: Int = DEFAU
     if(!dir.isDirectory){
         throw Exception("must be an directory")
     } else {
-        dir.listFiles()?.toList()?.let { zipFiles(it.toList(),compression, renameMap) }
+        dir.listFiles()?.toList()?.let { zipFiles(it.toList(), dir, compression, renameMap) }
     }
 }
 
@@ -142,6 +144,39 @@ private fun ZipOutputStream.zipFiles(files: List<File>, renameMap: HashMap<Strin
         val name = file.name
         if(renameMap != null && name in renameMap.keys){
             putNextEntry(ZipEntry(renameMap.get(name) ?: name))
+        } else {
+            putNextEntry(ZipEntry(name))
+        }
+        BufferedInputStream(FileInputStream(file)).use { inStream ->
+            inStream.copyTo(this)
+        }
+    }
+}
+
+@WorkerThread
+fun File.zipFiles(files: List<File>,  base: File, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    ZipOutputStream(BufferedOutputStream(FileOutputStream(this))).also{it.setLevel(compression)}.use { outStream ->
+        outStream.zipFiles(files, base, renameMap)
+    }
+}
+
+@WorkerThread
+fun Uri.zipFiles(files: List<File>,   base: File, @IntRange(from = -1, to = 9) compression: Int = DEFAULT_COMPRESSION, renameMap: HashMap<String, String>? = null) {
+    mainContext.contentResolver.openFileDescriptor(this, MODE_REWRITE).use { descriptor ->
+        descriptor?.fileDescriptor?.let {
+            ZipOutputStream(BufferedOutputStream(FileOutputStream(it))).also{it.setLevel(compression)}.use { outStream ->
+                outStream.zipFiles(files, base, renameMap)
+            }
+        }
+    }
+}
+
+private fun ZipOutputStream.zipFiles(files: List<File>, base: File, renameMap: HashMap<String, String>? = null) {
+    files.forEach { file ->
+        val name = file.toRelativeString(base)
+        if(renameMap != null && name.substringAfterLast(SEPARATOR, name) in renameMap.keys){
+            val prefix = name.substringAfterLast(SEPARATOR, EMPTY_STRING)
+            putNextEntry(ZipEntry("$prefix$SEPARATOR${renameMap.get(name) ?: name}"))
         } else {
             putNextEntry(ZipEntry(name))
         }
