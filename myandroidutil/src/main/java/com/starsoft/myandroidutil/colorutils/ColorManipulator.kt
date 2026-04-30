@@ -583,6 +583,15 @@ fun ColorContainer.setComponent(component: ColorComponent): ColorContainer {
     }
 }
 
+fun ColorContainer.setTransparency(@IntRange(from = 0, to = 255) transparency: Int): ColorContainer =
+    this.setComponent(ColorComponent.Alpha(transparency))
+
+fun ColorContainer.copyTransparency(other: ColorContainer): ColorContainer =
+    this.setComponent(ColorComponent.Alpha(other.a))
+
+fun ColorContainer.copyWithoutTransparency(): ColorContainer =
+    ColorComponentsContainer(this.r, this.g, this.b, 255)
+
 fun Transformation.simplyFindBestMatchInPalette(
     palette: Iterable<ColorContainer>,
     differ: ColorDiffer = absColorDiffer

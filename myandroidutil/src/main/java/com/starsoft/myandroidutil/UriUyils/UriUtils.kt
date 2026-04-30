@@ -26,6 +26,7 @@ import com.starsoft.myandroidutil.sharingUtils.*
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 
 /**
@@ -34,7 +35,12 @@ import java.io.FileOutputStream
 
 private const val URI_SCHEME_FILE ="file"
 
-@Suppress("BlockingMethodInNonBlockingContext")
+@WorkerThread
+fun <T> Context.useInputStreamFromUri(source: Uri, action: (InputStream) -> T): T? =
+    this@useInputStreamFromUri.contentResolver.openInputStream(source)?.use{input ->
+                action.invoke(input)
+            }
+
 @WorkerThread
 fun Context.getTemporaryFileFromUri(source: Uri, filePrefix: String, fileSuffix: String, directory: DIRECTORY = DIRECTORY.CACHE_FILES): File {
     return File.createTempFile(
