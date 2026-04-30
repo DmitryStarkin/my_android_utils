@@ -15,6 +15,8 @@
 package com.starsoft.myandroidutil.collectionUtils
 
 
+
+
 /**
  * Created by Dmitry Starkin on 24.05.2022 20:34.
  */
@@ -129,13 +131,14 @@ fun <T> List<T>.addToPosAndReturnNewInstance(item: T, position: Int): List<T> = 
     }
 }
 
-fun <T> Collection<T>.containsAnyItemFrom(other: Collection<T>): Boolean{
+fun <T> Collection<T>.containsAnyItemFrom(other: Collection<T>): Boolean =
 
-    other.forEach {
-        if(it in this) return true
+    run breaking@{
+        other.forEach {
+            if (it in this) return@breaking true
+        }
+        false
     }
-    return false
-}
 
 fun <T, R : Comparable<R>> Iterable<T>.groupByDescending(selector: (T) -> R): List<List<T>> =
     sortedByDescending {
