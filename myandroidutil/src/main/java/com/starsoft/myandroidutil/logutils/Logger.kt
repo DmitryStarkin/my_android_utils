@@ -42,7 +42,7 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
 
     fun d(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (isDebug && perform) {
-            var _msg = msg.invoke()
+            var _msg = if(appCommonTag == null){msg.invoke()} else {"$tag  ${msg.invoke()}"}
             t?.apply { Log.d(
                 visibleTag, _msg, this
                 )
