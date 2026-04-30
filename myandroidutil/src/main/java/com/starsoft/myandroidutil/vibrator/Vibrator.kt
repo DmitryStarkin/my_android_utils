@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.annotation.IntRange
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
 import com.starsoft.myandroidutil.timeutils.ScheduledJobTimer
@@ -28,13 +29,14 @@ import com.starsoft.myandroidutil.timeutils.ScheduledJobTimer
 /**
  * Created by Dmitry Starkin on 15.03.2023 15:15.
  */
-private const val MESSAGE_REPEAT = 1
-
-private val handler = ScheduledJobTimer()
+const val VIBRATE_UNTIL_CANCEL = Int.MAX_VALUE
+const val NO_REPEAT = -1
+const val NO_AMPLITUDE = 0
+const val MAX_AMPLITUDE = 250
 
 @SuppressLint("WrongConstant")
 @Suppress("DEPRECATION")
-fun getVibrator(): Vibrator = if (Build.VERSION.SDK_INT >= 31) {
+fun getVibrator():Vibrator = if (Build.VERSION.SDK_INT >= 31) {
     (mainContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
 } else {
     // backward compatibility for Android API < 26
@@ -42,47 +44,80 @@ fun getVibrator(): Vibrator = if (Build.VERSION.SDK_INT >= 31) {
     ContextProvider.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 }
 
+@SuppressLint("ObsoleteSdkInt")
 @Suppress("DEPRECATION")
-fun Vibration.launch(){
-    if(handler.hasMessages(MESSAGE_REPEAT)){
-        handler.cancelScheduledJob(MESSAGE_REPEAT)
+fun Vibration.launch(): Boolean{
+    if(!getVibrator().hasVibrator()) {
+        return false
     }
     getVibrator().cancel()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        getVibrator().vibrate(VibrationEffect.createWaveform(pattern, repeat))
+        if(amplitude == VibrationEffect.DEFAULT_AMPLITUDE || !getVibrator().hasAmplitudeControl()){
+            getVibrator().vibrate(VibrationEffect.createWaveform(pattern,  if(repeatCount == VIBRATE_UNTIL_CANCEL){1}else{NO_REPEAT}))
+        } else {
+            getVibrator().vibrate(VibrationEffect.createWaveform(pattern, amplitudePattern, if(repeatCount == VIBRATE_UNTIL_CANCEL){1}else{NO_REPEAT}))
+        }
+
     } else {
         // backward compatibility for Android API < 26
         // noinspection deprecation
-
-        getVibrator().vibrate(pattern, repeat)
+        getVibrator().vibrate(pattern, if(repeatCount == VIBRATE_UNTIL_CANCEL){1}else{NO_REPEAT})
     }
-    if(repeat != -1 && duration > 0){
-        handler.schedule(MESSAGE_REPEAT, duration){
-            getVibrator().cancel()
-        }
-    }
+    return true
 }
 
 fun stopVibrate() {
-    handler.removeCallbacksAndMessages(null)
     getVibrator().cancel()
 }
 
 interface Vibration{
-    val delay: Long
-    val vibrate: Long
-    val sleep: Long
-    val repeat: Int
-    val duration: Long
+    val startDelay: Long
+    val vibrateDuration: Long
+    val sleepDuration: Long
+    val repeatCount: Int
+    @get:IntRange(from = -1, to = 250)
+    val amplitude: Int
+        get() = -1
+
     val pattern: LongArray
-        get() = longArrayOf(delay, vibrate, sleep)
+        get() = (if(repeatCount <= 1 || repeatCount == VIBRATE_UNTIL_CANCEL){
+            longArrayOf(startDelay, vibrateDuration, sleepDuration)
+        } else {
+            val draftPattern = ArrayList<Long>()
+            draftPattern.add(startDelay)
+            for(i in 0 until repeatCount){
+                draftPattern.add(vibrateDuration)
+                draftPattern.add(sleepDuration)
+            }
+            draftPattern.toLongArray()
+        })
+
+    val amplitudePattern: IntArray
+        get() = (if(repeatCount <= 1 || repeatCount == VIBRATE_UNTIL_CANCEL){
+            intArrayOf(NO_AMPLITUDE, amplitude, NO_AMPLITUDE)
+        } else {
+            val draftPattern = ArrayList<Int>()
+            draftPattern.add(NO_AMPLITUDE)
+            for(i in 0 until repeatCount){
+                draftPattern.add(amplitude)
+                draftPattern.add(NO_AMPLITUDE)
+            }
+            draftPattern.toIntArray()
+        })
 }
 
-enum class VibrateNotifications(override val delay: Long,
-                                override val vibrate: Long,
-                                override val sleep: Long,
-                                override val repeat: Int,
-                                override val duration: Long): Vibration{
-    LONG_VIBRATION(0L, 1000L, 0L, -1, 0L),
-    SHORT_VIBRATION(0L, 100L, 0L, -1, 0L)
+data class VibrationContainer(override val startDelay: Long,
+                              override val vibrateDuration: Long,
+                              override val sleepDuration: Long,
+                              override val repeatCount: Int,
+                              override val amplitude: Int = -1
+) :Vibration
+
+enum class VibrateNotifications(override val startDelay: Long,
+                                override val vibrateDuration: Long,
+                                override val sleepDuration: Long,
+                                override val repeatCount: Int
+                                ): Vibration{
+    LONG_VIBRATION(0L, 1000L, 0L, NO_REPEAT),
+    SHORT_VIBRATION(0L, 100L, 0L, NO_REPEAT)
 }
