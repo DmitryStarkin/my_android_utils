@@ -70,7 +70,8 @@ sealed interface ColorComponent: ColorContainer {
     @get:IntRange(from = 0, to = 255)
     val value: Int
 
-    data class Red(@IntRange(from = 0, to = 255)
+    data class Red(
+        @param:IntRange(from = 0, to = 255)
                    override val value: Int,
     ): ColorComponent {
         override val r: Int = value
@@ -80,7 +81,8 @@ sealed interface ColorComponent: ColorContainer {
         override val color: Int = argb(a, r, g, b)
     }
 
-    data class Green(@IntRange(from = 0, to = 255)
+    data class Green(
+        @param:IntRange(from = 0, to = 255)
                      override val value: Int,
     ): ColorComponent {
         override val r: Int = 0
@@ -90,7 +92,8 @@ sealed interface ColorComponent: ColorContainer {
         override val color: Int = argb(a, r, g, b)
     }
 
-    data class Blue(@IntRange(from = 0, to = 255)
+    data class Blue(
+        @param:IntRange(from = 0, to = 255)
                     override val value: Int,
     ): ColorComponent {
         override val r: Int = 0
@@ -100,7 +103,8 @@ sealed interface ColorComponent: ColorContainer {
         override val color: Int = argb(a, r, g, b)
     }
 
-    data class Alpha(@IntRange(from = 0, to = 255)
+    data class Alpha(
+        @param:IntRange(from = 0, to = 255)
                      override val value: Int,
     ): ColorComponent {
         override val r: Int = 0
@@ -220,13 +224,13 @@ data class RGBAColorStringContainer(
 }
 
 data class ColorComponentsContainer(
-    @IntRange(from = 0, to = 255)
+    @field:IntRange(from = 0, to = 255)
     override val r: Int,
-    @IntRange(from = 0, to = 255)
+    @field:IntRange(from = 0, to = 255)
     override val g: Int,
-    @IntRange(from = 0, to = 255)
+    @field:IntRange(from = 0, to = 255)
     override val b: Int,
-    @IntRange(from = 0, to = 255)
+    @field:IntRange(from = 0, to = 255)
     override val a: Int = DEFAULT_ALPHA
 
 ) : ColorContainer {
