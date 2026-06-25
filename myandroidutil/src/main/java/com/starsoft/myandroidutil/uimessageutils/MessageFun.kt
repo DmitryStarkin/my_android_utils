@@ -21,11 +21,15 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Typeface
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.allViews
+import androidx.core.view.children
 import com.google.android.material.snackbar.Snackbar
 import com.starsoft.myandroidutil.providers.ContextProvider
 import com.starsoft.myandroidutil.providers.mainContext
@@ -183,3 +187,41 @@ fun Snackbar.setMaxLines(lines: Int?): Snackbar =
         }
         this
     }
+
+/**
+ * Applies infinite lines to all text views within the Snackbar.
+ *
+ * @return The modified [Snackbar] with infinite lines applied to its text views.
+ */
+fun Snackbar.applyInfiniteLines(): Snackbar = this.also {
+    setAllTextViewsToHaveInfiniteLinesCount(view)
+}
+
+/**
+ * Applies the maximum number of lines to all [TextView]s within the [Snackbar].
+ *
+ * @param lines The maximum number of lines for each [TextView]. Default is 5.
+ * @return The modified [Snackbar].
+ */
+fun Snackbar.applyMaxLines(lines: Int = 5): Snackbar = this.also {
+    view.allViews.updateMaxLine(lines)
+}
+
+
+@UiThread
+private fun setAllTextViewsToHaveInfiniteLinesCount(view: View) {
+    when (view) {
+        is TextView -> view.setSingleLine(false)
+        is ViewGroup -> for (child in view.children)
+            setAllTextViewsToHaveInfiniteLinesCount(child)
+    }
+}
+
+@UiThread
+private fun <T> Sequence<T>.updateMaxLine(maxLine : Int) {
+    for (view in this) {
+        if (view is TextView) {
+            view.maxLines = maxLine
+        }
+    }
+}
