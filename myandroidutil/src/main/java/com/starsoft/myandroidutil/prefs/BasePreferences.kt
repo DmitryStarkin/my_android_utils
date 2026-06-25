@@ -32,44 +32,56 @@ abstract class BasePreferences {
     val mPreferences
     get() = getPreferences()
 
+    open  fun onPrefChanged(){
+
+    }
+
     @JvmOverloads
     fun clearPref(name: String, isCommit: Boolean = false) {
         getPreferences().clearPref(name, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun clearAllPref(isCommit: Boolean = false) {
         getPreferences().clearAllPref(isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setIntPref(key: String, value: Int, isCommit: Boolean = false) {
         getPreferences().setIntPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setLongPref(key: String, value: Long, isCommit: Boolean = false) {
         getPreferences().setLongPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setBooleanPref(key: String, value: Boolean, isCommit: Boolean = false) {
         getPreferences().setBooleanPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setFloatPref(key: String, value: Float, isCommit: Boolean = false) {
         getPreferences().setFloatPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setStringPref(key: String, value: String, isCommit: Boolean = false) {
         getPreferences().setStringPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     @JvmOverloads
     fun setStringSetPref(key: String, value: MutableSet<String>, isCommit: Boolean = false) {
         getPreferences().setStringSetPref(key, value, isCommit)
+        onPrefChanged()
     }
 
     abstract fun getPreferences(): SharedPreferences
