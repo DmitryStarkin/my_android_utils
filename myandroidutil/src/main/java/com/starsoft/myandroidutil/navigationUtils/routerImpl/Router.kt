@@ -29,18 +29,20 @@ import androidx.annotation.AnimatorRes
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import com.starsoft.myandroidutil.R
+import com.starsoft.myandroidutil.collectionUtils.addAll
 import com.starsoft.myandroidutil.navigationUtils.enums.BackstackBehavior
 import com.starsoft.myandroidutil.navigationUtils.enums.ReplaceBehavior
 import com.starsoft.myandroidutil.navigationUtils.enums.RoutPolicy
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Host
 import com.starsoft.myandroidutil.navigationUtils.interfaces.Rout
 import com.starsoft.myandroidutil.refutils.isInstanceOrExtend
+import com.starsoft.myandroidutil.stringext.EMPTY_STRING
 import kotlinx.parcelize.Parcelize
 
 /**
  * Created by Dmitry Starkin on 06.02.2022 16:30.
  */
-open class Router(private val host: Host, private val config: RouterConfig = RouterConfig()) {
+open class Router(private val host: Host, private val config: RouterConfig = RouterConfig(), routs: List<Rout> = emptyList()) {
 
     constructor(activity: FragmentActivity, config: RouterConfig = RouterConfig()): this(HostStub(hostActivity = activity), config)
 
@@ -48,7 +50,17 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
 
     private val manager = getFragmentManager(host)
 
-    open val myRouts: List<Rout> = emptyList()
+    val routs: ArrayList<Rout> = ArrayList()
+
+    val myRouts: List<Rout> get() = routs
+
+    fun addRouts(routs: List<Rout>){
+        routs.addAll(routs)
+    }
+
+    init {
+        addRouts(routs)
+    }
 
     companion object {
         private const val REPLACE_FLAG_KEY = "com.starsoft.myandroidutil.navigationUtils.routerImpl.replaceOrFinish"
@@ -424,6 +436,12 @@ open class Router(private val host: Host, private val config: RouterConfig = Rou
             .removeFragments(tag)
             .customize(fragment)
             .addOrShow(fragment, tag)
+            .commit()
+    }
+
+    fun removeAll(){
+        manager.beginTransaction()
+            .removeFragments(EMPTY_STRING)
             .commit()
     }
 
