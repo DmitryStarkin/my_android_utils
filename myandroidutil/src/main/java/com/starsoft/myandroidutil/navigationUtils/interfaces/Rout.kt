@@ -15,6 +15,7 @@
 package com.starsoft.myandroidutil.navigationUtils.interfaces
 
 import android.os.Bundle
+import com.starsoft.myandroidutil.navigationUtils.routerImpl.Router
 
 
 /**
@@ -42,3 +43,19 @@ interface Rout {
             get() = OpenLink::class.java
     }
 }
+
+fun Rout.isTheSame(other: Rout): Boolean = destination == other.destination && tag == other.tag
+
+fun List<Rout>.contains(rout: Rout): Boolean =
+    find {
+        it.isTheSame(rout)
+    }?.let{true} ?: false
+
+fun List<Router>.getByRout(rout: Rout): Router =
+    if(isEmpty()){
+        throw Exception("must be not empty")
+    }else{
+        find{
+            it.myRouts.contains(rout)
+        } ?: this[0]
+    }
