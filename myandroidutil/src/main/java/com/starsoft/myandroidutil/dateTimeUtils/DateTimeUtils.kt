@@ -14,6 +14,7 @@
 
 package com.starsoft.myandroidutil.dateTimeUtils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.starsoft.myandroidutil.R
 import com.starsoft.myandroidutil.stringext.EMPTY_STRING
@@ -123,3 +124,14 @@ fun Context.getRelativeTimeStamp(timeIntervalMills: Long): String {
 
 fun getTodayDate(): Date = Date((todayDataFormatter.format(Date()).getDate(todayDataFormatter)?.time ?: Date().time)
         + timeIntervalsMills[2] - timeIntervalsMills[5])
+
+fun formatWallClock(timeMillis: Long): String = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date(timeMillis))
+
+
+@SuppressLint("DefaultLocale")
+fun formatDuration(durationMillis: Long): String {
+    val minutes = (durationMillis / 60_000) % 60
+    val seconds = (durationMillis / 1_000) % 60
+    val millis = durationMillis % 1_000
+    return String.format("%02d:%02d.%03d", minutes, seconds, millis)
+}

@@ -21,7 +21,7 @@ import com.starsoft.myandroidutil.refutils.getBuildConfigValue
 
 // This File Created at 25.11.2020 11:34.
 
-class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = false) {
+class Logger {
 
     private companion object {
 
@@ -35,114 +35,118 @@ class Logger @JvmOverloads constructor(var tag: String, var toFile: Boolean = fa
         }
     }
 
-
     internal var appCommonTag: String? = null
 
-    private val visibleTag: String get() = appCommonTag ?: tag
+    private fun visibleTag(tag: String): String = appCommonTag ?: tag
 
-    fun d(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: () -> String) {
         if (isDebug && perform) {
+            val vTag = visibleTag(tag)
             var _msg = if(appCommonTag == null){msg.invoke()} else {"$tag  ${msg.invoke()}"}
             t?.apply { Log.d(
-                visibleTag, _msg, this
+                vTag, _msg, this
                 )
             } ?: Log.d(
-                visibleTag, _msg
+                vTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("d - $visibleTag $_msg")
+                LogWriter.writeLogMessage("d - $vTag $_msg")
             }
         }
     }
 
     @JvmOverloads
-    fun d(perform: Boolean = true, t: Throwable? = null, msg: String) {
-       d(perform,t){msg}
+    fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: String) {
+       d(tag, toFile, perform, t){msg}
     }
 
-    fun i(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
+            val vTag = visibleTag(tag)
             var _msg = msg.invoke()
             t?.apply { Log.i(
-                visibleTag, _msg, this
+                vTag, _msg, this
             )
             } ?: Log.i(
-                visibleTag, _msg
+                vTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " + "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("i - $visibleTag $_msg")
+                LogWriter.writeLogMessage("i - $vTag $_msg")
             }
         }
     }
 
     @JvmOverloads
-    fun i(perform: Boolean = true, t: Throwable? = null, msg: String) {
-        i(perform,t){msg}
+    fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+        i(tag, toFile, perform,t){msg}
     }
 
 
-    fun w(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
+            val vTag = visibleTag(tag)
             var _msg = msg.invoke()
             t?.apply { Log.w(
-                visibleTag, _msg, this
+                vTag, _msg, this
             )
             } ?: Log.w(
-                visibleTag, _msg
+                vTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("w - $visibleTag $_msg")
+                LogWriter.writeLogMessage("w - $vTag $_msg")
             }
         }
     }
 
     @JvmOverloads
-    fun w(perform: Boolean = true, t: Throwable? = null, msg: String) {
-        w(perform,t){msg}
+    fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+        w(tag, toFile, perform,t){msg}
     }
 
-    fun e(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
+            val vTag = visibleTag(tag)
             var _msg = msg.invoke()
             t?.apply { Log.e(
-                visibleTag, _msg, this
+                vTag, _msg, this
             )
             } ?: Log.e(
-                visibleTag, _msg
+                vTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("e - $visibleTag $_msg")
+                LogWriter.writeLogMessage("e - $vTag $_msg")
             }
         }
     }
 
     @JvmOverloads
-    fun e(perform: Boolean = true, t: Throwable? = null, msg: String) {
-        e(perform,t){msg}
+    fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+        e(tag, toFile, perform,t){msg}
     }
 
-    fun v(perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
+            val vTag = visibleTag(tag)
             var _msg = msg.invoke()
             t?.apply { Log.v(
-                visibleTag, _msg, this
+                vTag, _msg, this
             )
             } ?: Log.v(
-                visibleTag, _msg
+                vTag, _msg
             )
             if (toFile) {
                 t?.apply { _msg = _msg + " " +  "\r\n" + Log.getStackTraceString(this) }
-                LogWriter.writeLogMessage("v - $visibleTag $_msg")
+                LogWriter.writeLogMessage("v - $vTag $_msg")
             }
         }
     }
 
     @JvmOverloads
-    fun v(perform: Boolean = true, t: Throwable? = null, msg: String) {
-        v(perform,t){msg}
+    fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+        v(tag, toFile, perform,t){msg}
     }
 }
