@@ -22,7 +22,7 @@ import kotlin.concurrent.withLock
 // This File Created at 28.11.2020 13:41.
 
 private val mainLogger: Logger by lazy {
-    Logger("CommonLog")
+    Logger()
 }
 
 private const val M_NAME = "com.starsoft.myandroidutil.logutils.Log"
@@ -44,91 +44,67 @@ fun resetTag(){
 @JvmOverloads
 fun d(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.d(t = t) { msg }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.d(tg, t = t) { msg }
     }
 }
 
 fun log_d(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.d(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.d(tg, toFile, t = t) { msg.invoke() }
     }
 }
 
 fun log_dT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag = tag ?: getTag()
-        val tf = mainLogger.toFile
-        mainLogger.d(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.d(tag ?: tg, t = t) { msg.invoke() }
     }
 }
 
 @JvmOverloads
 fun i(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.i(t = t) { msg }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.i(tg, t = t) { msg }
     }
 }
 
 fun log_i(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.i(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.i(tg, toFile, t = t) { msg.invoke() }
     }
 }
 
 fun log_iT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag = tag ?: getTag()
-        val tf = mainLogger.toFile
-        mainLogger.i(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.i(tag ?: tg, t = t) { msg.invoke() }
     }
 }
 
 @JvmOverloads
 fun w(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.w(t = t) { msg }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.w(tg, t = t) { msg }
     }
 }
 
 fun log_w(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.w(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.w(tg, toFile, t = t) { msg.invoke() }
     }
 
 }
 
 fun log_wT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag = tag ?: getTag()
-        val tf = mainLogger.toFile
-        mainLogger.w(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.w(tag ?: tg, t = t) { msg.invoke() }
     }
 
 }
@@ -136,60 +112,44 @@ fun log_wT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "})
 @JvmOverloads
 fun e(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.e(t = t) { msg }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.e(tg, t = t) { msg }
     }
 }
 
 fun log_e(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.e(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.e(tg, toFile, t = t) { msg.invoke() }
     }
 }
 
 fun log_eT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag = tag ?: getTag()
-        val tf = mainLogger.toFile
-        mainLogger.e(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.e(tag ?: tg, t = t) { msg.invoke() }
     }
 }
 
 @JvmOverloads
 fun v(msg: String = " ", t: Throwable? = null, toFile: Boolean = false ) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.v(t = t) { msg }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.v(tg, t = t) { msg }
     }
 }
 
 fun log_v(toFile: Boolean = false, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag =  getTag()
-        val tf = mainLogger.toFile
-        mainLogger.toFile = toFile
-        mainLogger.v(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.v(tg, toFile, t = t) { msg.invoke() }
     }
 }
 
 fun log_vT(tag: String? = null, t: Throwable? = null, msg: () -> String = {" "}) {
     lock.withLock {
-        mainLogger.tag = tag ?: getTag()
-        val tf = mainLogger.toFile
-        mainLogger.v(t = t) { msg.invoke() }
-        mainLogger.toFile = tf
+        val tg = getTag()
+        mainLogger.v(tag ?: tg, t = t) { msg.invoke() }
     }
 }
 
