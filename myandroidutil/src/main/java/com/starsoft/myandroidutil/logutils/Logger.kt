@@ -35,11 +35,13 @@ class Logger {
         }
     }
 
+    @JvmSynthetic
     internal var appCommonTag: String? = null
 
     private fun visibleTag(tag: String): String = appCommonTag ?: tag
 
-    fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: () -> String) {
+    @JvmSynthetic
+    internal fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: () -> String) {
         if (isDebug && perform) {
             val vTag = visibleTag(tag)
             var _msg = if(appCommonTag == null){msg.invoke()} else {"$tag  ${msg.invoke()}"}
@@ -56,12 +58,13 @@ class Logger {
         }
     }
 
-    @JvmOverloads
-    fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: String) {
+    @JvmSynthetic
+    internal fun d(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null,  msg: String) {
        d(tag, toFile, perform, t){msg}
     }
 
-    fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    @JvmSynthetic
+    internal fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             val vTag = visibleTag(tag)
             var _msg = msg.invoke()
@@ -78,13 +81,13 @@ class Logger {
         }
     }
 
-    @JvmOverloads
-    fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+    @JvmSynthetic
+    internal fun i(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
         i(tag, toFile, perform,t){msg}
     }
 
-
-    fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    @JvmSynthetic
+    internal fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             val vTag = visibleTag(tag)
             var _msg = msg.invoke()
@@ -101,12 +104,13 @@ class Logger {
         }
     }
 
-    @JvmOverloads
-    fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+    @JvmSynthetic
+    internal fun w(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
         w(tag, toFile, perform,t){msg}
     }
 
-    fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    @JvmSynthetic
+    internal fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             val vTag = visibleTag(tag)
             var _msg = msg.invoke()
@@ -123,12 +127,13 @@ class Logger {
         }
     }
 
-    @JvmOverloads
-    fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+    @JvmSynthetic
+    internal fun e(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
         e(tag, toFile, perform,t){msg}
     }
 
-    fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
+    @JvmSynthetic
+    internal fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: () -> String) {
         if (perform) {
             val vTag = visibleTag(tag)
             var _msg = msg.invoke()
@@ -145,8 +150,8 @@ class Logger {
         }
     }
 
-    @JvmOverloads
-    fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
+    @JvmSynthetic
+    internal fun v(tag: String, toFile: Boolean = false, perform: Boolean = true, t: Throwable? = null, msg: String) {
         v(tag, toFile, perform,t){msg}
     }
 }
