@@ -18,7 +18,11 @@ package com.starsoft.myandroidutil.collectionUtils
 
 
 /**
- * Created by Dmitry Starkin on 24.05.2022 20:34.
+ * Returns the next element in the array after the specified [item].
+ * If the [item] is the last element in the array, returns the first element.
+ *
+ * @param item The current item to find the next element for.
+ * @return The next element in the array or the first element if the current item is the last one.
  */
 
 fun <T> Array<T>.getNext(item: T): T{
@@ -35,6 +39,12 @@ fun <T> Array<T>.getNext(item: T): T{
     return this[0]
 }
 
+/**
+ * Creates a list containing all elements from the provided collections.
+ *
+ * @param elements [Collection]s whose elements are to be included in the resulting list.
+ * @return A new [List] containing all elements from the provided collections.
+ */
 fun <T> listOfCollections(vararg elements: Collection<T>): List<T> = if (elements.isNotEmpty()) {
     ArrayList<T>().apply {
         elements.forEach {
@@ -44,6 +54,11 @@ fun <T> listOfCollections(vararg elements: Collection<T>): List<T> = if (element
 } else {emptyList()}
 
 
+/**
+ * Removes the last element from the list and returns a new list.
+ *
+ * @return A new list with the last element removed.
+ */
 fun <T> List<T>.removeLast(): List<T> =
     if(isEmpty()){
         this
@@ -54,6 +69,13 @@ fun <T> List<T>.removeLast(): List<T> =
         }
     }
 
+/**
+ * Removes the first element from this list and returns a new list.
+ *
+ * If the list is empty, returns the original list.
+ *
+ * @return A new list with the first element removed.
+ */
 fun <T> List<T>.removeFirst(): List<T> =
     if(isEmpty()){
         this
@@ -64,6 +86,12 @@ fun <T> List<T>.removeFirst(): List<T> =
         }
     }
 
+/**
+ * Removes the first occurrence of the specified item from this list.
+ *
+ * @param item The item to remove.
+ * @return A new list with the item removed, or the original list if the item is not present.
+ */
 fun <T> List<T>.remove(item: T): List<T> =
     if(isEmpty()){
         this
@@ -75,7 +103,13 @@ fun <T> List<T>.remove(item: T): List<T> =
         newList
     }
 
-fun <T> List<T>.moveToFront(item: T): List<Any?> =
+/**
+ * Moves the specified item to the front of the list.
+ *
+ * @param item The item to move to the front.
+ * @return A new list with the item moved to the front, or the original list if the item is not present.
+ */
+fun <T> List<T>.moveToFront(item: T): List<T> =
     if(isEmpty() || !this.contains(item)){
         this
     } else {
@@ -86,22 +120,45 @@ fun <T> List<T>.moveToFront(item: T): List<Any?> =
         }.toList()
     }
 
+/**
+ * Adds an item to the end of this list.
+ *
+ * @param item The item to add.
+ * @return A new list containing all elements of the original list followed by the added item.
+ */
 fun <T> List<T>.add(item: T) : List<T>  = ArrayList<T>().also {
     it.addAll(this)
     it.add(item)
 }
 
+/**
+ * Adds all elements of the specified [items] list to this list.
+ *
+ * @param items The list containing elements to be added to this list.
+ * @return A new list containing all elements from both this list and the [items] list.
+ */
 fun <T> List<T>.addAll(items: List<T>) : List<T>  = ArrayList<T>().also {
     it.addAll(this)
     it.addAll(items)
 }
 
 
+/**
+ * Adds an item to the front of the list.
+ *
+ * @param item The item to add to the front.
+ * @return A new list with the item added to the front.
+ */
 fun <T> List<T>.addToFront(item: T): List<T>  = ArrayList<T>().also {
     it.add(item)
     it.addAll(this)
 }
 
+/**
+ * Removes adjacent duplicate elements from an iterable.
+ *
+ * @return A list containing the original elements with adjacent duplicates removed.
+ */
 fun <T> Iterable<T>.removeAdjacent(): List<T> {
     var last: T? = null
     return mapNotNull {
@@ -114,14 +171,31 @@ fun <T> Iterable<T>.removeAdjacent(): List<T> {
     }
 }
 
+/**
+ * Determines if the given [index] is the last index of this collection.
+ *
+ * @param index The index to check.
+ * @return `true` if the [index] is the last index, `false` otherwise.
+ */
 fun <T>  Collection<T>.isLastIndex(index: Int): Boolean = (size - 1) == index
 
 
-fun <T> List<T>.addAndReturnNewInstance(item: T): List<T> = ArrayList<T>().also {
-    it.addAll(this)
-    it.add(item)
-}
+/**
+ * Adds an item to the end of this list and returns a new list containing all elements of the original list followed by the added item.
+ *
+ * @param item The item to add.
+ * @return A new [List] containing all elements of the original list followed by the added item.
+ */
+fun <T> List<T>.addAndReturnNewInstance(item: T): List<T> = add(item)
 
+/**
+ * Adds an item to a specified position in the list and returns a new instance of the list.
+ *
+ * @param item The item to be added to the list.
+ * @param position The index at which the item should be inserted. If the position is greater than or equal to the size of the list, the item will be
+ *  appended to the end.
+ * @return A new list with the item added at the specified position.
+ */
 fun <T> List<T>.addToPosAndReturnNewInstance(item: T, position: Int): List<T> = ArrayList<T>().also {
     it.addAll(this)
     if(this.lastIndex >= position){
@@ -131,6 +205,12 @@ fun <T> List<T>.addToPosAndReturnNewInstance(item: T, position: Int): List<T> = 
     }
 }
 
+/**
+ * Determines whether the collection contains any item from another collection.
+ *
+ * @param other [Collection] to check for items within this collection
+ * @return true if any item from [other] is found in this collection, otherwise `false`
+ */
 fun <T> Collection<T>.containsAnyItemFrom(other: Collection<T>): Boolean =
 
     run breaking@{
@@ -140,11 +220,24 @@ fun <T> Collection<T>.containsAnyItemFrom(other: Collection<T>): Boolean =
         false
     }
 
+/**
+ * Groups the elements of this [Iterable] into lists based on the values returned by the specified [selector].
+ * The grouping is done in descending order.
+ *
+ * @param selector a function that extracts a key from each element to be used for grouping
+ * @return a list of lists, where each sublist contains elements with the same key
+ */
 fun <T, R : Comparable<R>> Iterable<T>.groupByDescending(selector: (T) -> R): List<List<T>> =
     sortedByDescending {
         selector(it)
     }.group(selector)
 
+/**
+ * Groups the elements of this collection by the specified [selector] function.
+ *
+ * @param selector a function that extracts a property from each element to be used as a key for grouping
+ * @return a list of lists, where each sublist contains elements that have the same key according to the [selector]
+ */
 fun <T, R : Comparable<R>> Iterable<T>.groupBy(selector: (T) -> R): List<List<T>> =
     sortedBy {
         selector(it)
